@@ -8,12 +8,18 @@
             <th>Title</th>
             <th>Summary</th>
         </tr>
-        @scenarios.map { scenario =>
+        @if(scenarios.isEmpty()) {
             <tr>
-                <td><a href="@controllers.routes.Scenario.get(scenario.id)">@scenario.id</a></td>
-                <td><a href="@controllers.routes.Scenario.get(scenario.id)">@scenario.title</a></td>
-                <td>@scenario.summary</td>
+                <td colspan="3">No scenarios found...</td>
             </tr>
+        } else {
+            @scenarios.map { scenario =>
+                <tr>
+                    <td><a href="@controllers.routes.Scenario.get(scenario.id)">@scenario.id</a></td>
+                    <td><a href="@controllers.routes.Scenario.get(scenario.id)">@scenario.title</a></td>
+                    <td>@scenario.summary</td>
+                </tr>
+            }
         }
     </table>
 
