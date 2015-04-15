@@ -14,17 +14,48 @@ import views.html.scenario_list;
 import java.util.List;
 import java.util.Optional;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
+
 public class Scenario extends Controller {
 
     public static Result list() {
-        List<models.Scenario> scenarios = finder().all().results;
+
+        // TODO work async
+
+        List<models.Scenario> scenarios;
+
+        if (request().queryString().containsKey("q") && !"".equals(request().getQueryString("q"))) {
+
+            // user provided a query string, search for it in all fields
+            IndexQuery<models.Scenario> query = new IndexQuery<>(models.Scenario.class);
+            String qs = request().getQueryString("q");
+            query.setBuilder(
+                    multiMatchQuery(qs, models.Scenario.TITLE, models.Scenario.SUMMARY, models.Scenario.NARRATIVE)
+            );
+            IndexResults<models.Scenario> search = finder().search(query);
+            if (search.getTotalCount() == 0) {
+                scenarios = newArrayList();
+            } else {
+                scenarios = search.getResults();
+            }
+
+        } else {
+
+            // user didn't provide a query string, return all scenarios
+            scenarios = finder().all().results;
+        }
+
         if (request().accepts("text/html")) {
             return ok(scenario_list.render(scenarios));
         }
+
         return ok(Json.toJson(scenarios));
     }
 
     public static Result get(String id) {
+
+        // TODO work async
 
         Optional<models.Scenario> found = Optional.ofNullable(finder().byId(String.valueOf(id)));
 
@@ -38,28 +69,19 @@ public class Scenario extends Controller {
     }
 
     public static Result create() {
+
         // TODO work async
+
         Form<models.Scenario> form = new Form<>(models.Scenario.class);
         models.Scenario scenario = form.bindFromRequest().get();
         IndexResponse response = scenario.index();
+
         if (response.isCreated()) {
             scenario.id = response.getId();
             return created();
         } else {
             return internalServerError();
         }
-    }
-
-    public static Result find(String searchTerm) {
-        // TODO work async
-        IndexQuery<models.Scenario> query = new IndexQuery<>(models.Scenario.class);
-        query.setQuery("title:("+ searchTerm+")");
-
-        IndexResults<models.Scenario> search = finder().search(query);
-        if (search.getTotalCount() == 0) {
-            return notFound();
-        }
-        return ok(Json.toJson(search.results));
     }
 
     private static Index.Finder<models.Scenario> finder() {
