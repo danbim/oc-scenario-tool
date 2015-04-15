@@ -78,6 +78,7 @@ public class Scenario extends Controller {
 
         if (response.isCreated()) {
             scenario.id = response.getId();
+            response().setHeader("Location", controllers.routes.Scenario.get(scenario.id).url());
             return created();
         } else {
             return internalServerError();

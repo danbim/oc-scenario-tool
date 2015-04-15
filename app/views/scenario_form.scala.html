@@ -1,0 +1,28 @@
+@(scenario: Option[models.Scenario])
+
+<form class="form-horizontal" action="@controllers.routes.Scenario.create" method="post">
+    <div class="form-group">
+        <label for="title" class="col-md-2">Title</label>
+        <div class="col-md-10">
+            <input type="text" class="form-control" id="title" name="title" value="@scenario.map(s => s.title)">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="title" class="col-md-2">Summary</label>
+        <div class="col-md-10">
+            <input type="text" class="form-control" id="summary" name="summary" value="@scenario.map(s => s.summary)">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="title" class="col-md-2">Narrative</label>
+        <div class="col-md-10">
+            <textarea id="narrative" name="narrative">@scenario.map(s => s.narrative)</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-default">Search</button>
+        </div>
+    </div>
+</form>
+
