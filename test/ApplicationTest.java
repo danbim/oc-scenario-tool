@@ -22,7 +22,7 @@ public class ApplicationTest {
 
     @Test
     public void renderTemplate() {
-        Html html = index.render("Your new application is ready.");
+        Html html = index.render();
         assertThat(contentType(html)).isEqualTo("text/html");
         assertThat(contentAsString(html)).contains("Your new application is ready.");
     }

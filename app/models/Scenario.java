@@ -1,6 +1,7 @@
 package models;
 
 import com.github.cleverage.elasticsearch.Index;
+import com.github.cleverage.elasticsearch.IndexUtils;
 import com.github.cleverage.elasticsearch.Indexable;
 import com.github.cleverage.elasticsearch.annotations.IndexType;
 import com.google.common.base.MoreObjects;
@@ -16,8 +17,7 @@ public class Scenario extends Index {
     public static final String TITLE = "title";
     public static final String SUMMARY = "summary";
     public static final String NARRATIVE = "narrative";
-
-    public String id;
+    public static final String CREATOR = "creator";
 
     public String title;
 
@@ -25,15 +25,7 @@ public class Scenario extends Index {
 
     public String narrative;
 
-    public Scenario() {
-    }
-
-    public Scenario(String id, String title, String summary, String narrative) {
-        this.id = id;
-        this.title = title;
-        this.summary = summary;
-        this.narrative = narrative;
-    }
+    public User creator;
 
     @Override
     public Map toIndex() {
@@ -42,6 +34,7 @@ public class Scenario extends Index {
         map.put(TITLE, title);
         map.put(SUMMARY, summary);
         map.put(NARRATIVE, narrative);
+        map.put(CREATOR, creator.toIndex());
         return map;
     }
 
@@ -54,6 +47,7 @@ public class Scenario extends Index {
         this.title = (String) map.get(TITLE);
         this.summary = (String) map.get(SUMMARY);
         this.narrative = (String) map.get(NARRATIVE);
+        this.creator = IndexUtils.getIndexable(map, CREATOR, User.class);
         return this;
     }
 
@@ -64,6 +58,7 @@ public class Scenario extends Index {
                 .add(TITLE, title)
                 .add(SUMMARY, summary)
                 .add(NARRATIVE, narrative)
+                .add(CREATOR, creator)
                 .toString();
     }
 }

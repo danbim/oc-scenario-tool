@@ -3,12 +3,19 @@
 # ~~~~
 
 # Home page
-GET         /                     controllers.Application.index
+GET           /                     controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file         controllers.Assets.at(path="/public", file)
+GET           /assets/*file         controllers.Assets.at(path="/public", file)
 
 # Scenario CRUD functionality
-GET         /scenarios            controllers.Scenario.list
-POST        /scenarios            controllers.Scenario.create
-GET         /scenarios/:id        controllers.Scenario.get(id: String)
+GET           /scenarios            controllers.ScenarioController.list
+POST          /scenarios            controllers.ScenarioController.create
+GET           /scenarios/:id        controllers.ScenarioController.get(id: String)
+DELETE        /scenarios/:id        controllers.ScenarioController.delete(id: String)
+
+# User CRUD functionality
+GET           /users                controllers.UserController.list
+POST          /users                controllers.UserController.create
+GET           /users/:id            controllers.UserController.get(id: String)
+DELETE        /users/:id            controllers.UserController.delete(id: String)

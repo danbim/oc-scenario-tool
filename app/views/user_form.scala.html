@@ -1,0 +1,15 @@
+@(user: Option[User])
+
+<form class="form-horizontal" action="@controllers.routes.UserController.create" method="post">
+    <div class="form-group">
+        <label for="title" class="col-md-2">Name</label>
+        <div class="col-md-10">
+            <input type="text" class="form-control" id="name" name="name" value="@user.map(u => u.name)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-default">Create</button>
+        </div>
+    </div>
+</form>
