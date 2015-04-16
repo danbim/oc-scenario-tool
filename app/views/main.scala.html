@@ -35,15 +35,38 @@
                     } else {
                         <li><a href="@routes.UserController.list()">Users</a></li>
                     }
+                </ul>
+                <ul class="nav navbar-nav navbar-nav-right">
 
-                    @if(request().path().equals(routes.OpenIDController.login().url)) {
-                        <li class="active"><a href="@routes.OpenIDController.login()">Log In</a></li>
-                    } else {
-                        <li><a href="@routes.OpenIDController.login()">Log In</a></li>
+                    @com.feth.play.module.pa.views.html.currentAuth() { auth =>
+                        @if(auth != null) {
+                            <li><a href="@com.feth.play.module.pa.controllers.routes.Authenticate.logout()">Logout</a></li>
+                        } else {
+                            &nbsp;
+                        }
                     }
+
+                    @com.feth.play.module.pa.views.html.forProviders() { p =>
+                        <li><a href="@p.getUrl()">@p.getKey()</a></li>
+                    }
+
+                    <li><a href="@controllers.routes.Restricted.index()">Secrets everywhere...</a></li>
                 </ul>
             </nav>
+
+            @if(flash.contains(Application.FLASH_ERROR_KEY)) {
+                <div class="alert alert-danger" role="alert">
+                    @flash().get(Application.FLASH_ERROR_KEY)
+                </div>
+            }
+            @if(flash.contains(Application.FLASH_MESSAGE_KEY)) {
+                <div class="alert alert-success" role="alert">
+                    @flash().get(Application.FLASH_MESSAGE_KEY)
+                </div>
+            }
+
             @content
+
         </div>
     </body>
 </html>

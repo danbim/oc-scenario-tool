@@ -28,7 +28,7 @@ public class UserController extends Controller {
 
             // user provided a query string, search for it in all fields
             IndexQuery<User> query = new IndexQuery<>(User.class);
-            query.setBuilder(multiMatchQuery(q, User.ID, User.NAME));
+            query.setBuilder(multiMatchQuery(q, User.NAME));
             IndexResults<User> search = finder().search(query);
 
             if (search.getTotalCount() == 0) {

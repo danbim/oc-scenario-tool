@@ -14,6 +14,7 @@ libraryDependencies ++= Seq(
   "org.webjars" %% "webjars-play" % "2.3.0-2",
   "org.webjars" % "bootstrap" % "3.1.1-2",
   "com.google.guava" % "guava" % "18.0",
+  "com.feth" %% "play-authenticate" % "0.6.8",
   ("com.clever-age" % "play2-elasticsearch" % "1.1.0")
     .exclude("com.typesafe.play", "play-functional_2.10")
     .exclude("com.typesafe.akka", "akka-actor_2.10")
