@@ -2,16 +2,8 @@
 
     @main("OrganiCity Scenarios") {
 
-        <div class="row">
-            <div class="col-md-12">
-                <form class="form-inline pull-right" action="@controllers.routes.ScenarioController.list" method="get">
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="input_search" name="q" value="@request().queryString().get("q")">
-                    </div>
-                    <button type="submit" class="btn btn-default">Search</button>
-                </form>
-            </div>
-        </div>
+        @scenario_search_form(true)
+
         <div class="row">
             <div class="col-md-12">
                 &nbsp;
@@ -49,10 +41,4 @@
                 @scenario_form(Option.empty, users)
             </div>
         </div>
-        <script>
-        $(function() {
-            $("#input_search" ).focus();
-            $("#input_search" ).select();
-        })
-    </script>
     }
