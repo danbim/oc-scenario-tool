@@ -23,15 +23,23 @@
         <div class="container">
             <nav class="navbar navbar-default navbar-static-top">
                 <ul class="nav navbar-nav">
+
                     @if(request().path().equals(routes.ScenarioController.list().url)) {
                         <li class="active"><a href="@routes.ScenarioController.list()">Scenarios</a></li>
                     } else {
                         <li><a href="@routes.ScenarioController.list()">Scenarios</a></li>
                     }
+
                     @if(request().path().equals(routes.UserController.list().url)) {
                         <li class="active"><a href="@routes.UserController.list()">Users</a></li>
                     } else {
                         <li><a href="@routes.UserController.list()">Users</a></li>
+                    }
+
+                    @if(request().path().equals(routes.OpenIDController.login().url)) {
+                        <li class="active"><a href="@routes.OpenIDController.login()">Log In</a></li>
+                    } else {
+                        <li><a href="@routes.OpenIDController.login()">Log In</a></li>
                     }
                 </ul>
             </nav>

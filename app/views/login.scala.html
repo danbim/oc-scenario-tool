@@ -1,0 +1,14 @@
+@(errorMessage: String)
+
+@main("OrganiCity Scenarios") {
+
+    @if(errorMessage != null && !"".equals(errorMessage)) {
+        <div class="alert alert-danger" role="alert">@errorMessage</div>
+    }
+
+    <form method="post" action="@routes.OpenIDController.loginPost()">
+        <input type="text" name="openID" id="openID" value="https://www.google.com/accounts/o8/id"/>
+        <button type="submit" value="Log In"></button>
+    </form>
+
+}
