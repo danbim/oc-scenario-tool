@@ -39,11 +39,15 @@ public class User extends Index {
 
     public List<UserLinkedAccount> linkedAccounts = newArrayList();
 
-    public static Optional<User> findByAuthUserIdentity(AuthUserIdentity currentAuthUser) {
+    public static Optional<User> findByAuthUserIdentity(AuthUserIdentity identity) {
 
         Finder<User> finder = new Finder<>(User.class);
         IndexQuery<User> query = new IndexQuery<>(User.class);
-        query.setBuilder(matchQuery(User.AUTH_ID, currentAuthUser.getId()));
+        if (identity instanceof EmailIdentity) {
+            query.setBuilder(matchQuery(User.EMAIL, ((EmailIdentity) identity).getEmail()));
+        } else {
+            query.setBuilder(matchQuery(User.AUTH_ID, identity.getId()));
+        }
         IndexResults<User> search = finder.search(query);
 
         if (search.getTotalCount() == 0) {

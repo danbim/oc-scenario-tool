@@ -16,8 +16,9 @@
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Auth ID</th>
+                    <th>Email</th>
                     <th>Auth Provider</th>
+                    <th>Auth ID</th>
                     <th>&nbsp;</th>
                 </tr>
                 @if(users.isEmpty()) {
@@ -29,8 +30,9 @@
                         <tr>
                             <td>@user.id</td>
                             <td>@user.name</td>
-                            <td>@user.auth_id</td>
+                            <td>@user.email</td>
                             <td>@user.auth_provider</td>
+                            <td>@user.auth_id</td>
                             <td>
                                 <button type="button" class="btn btn-danger" onclick="deleteUser('@controllers.routes.UserController.delete(user.id)')">Delete</button>
                             </td>

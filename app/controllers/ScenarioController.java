@@ -85,18 +85,6 @@ public class ScenarioController extends Controller {
 
         // TODO work async
 
-        Formatters.register(User.class, new Formatters.SimpleFormatter<User>() {
-            @Override
-            public User parse(String s, Locale locale) throws ParseException {
-                return new Index.Finder<>(User.class).byId(s);
-            }
-
-            @Override
-            public String print(User user, Locale locale) {
-                return user.id;
-            }
-        });
-
         Form<Scenario> form = new Form<>(Scenario.class);
         Scenario scenario = form.bindFromRequest().get();
         IndexResponse response = scenario.index();
