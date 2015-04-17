@@ -1,3 +1,7 @@
 9000:com.github.cleverage.elasticsearch.plugin.IndexPlugin
 10005:services.MyUserServicePlugin
 10010:com.feth.play.module.pa.providers.oauth2.google.GoogleAuthProvider
+10020:com.feth.play.module.pa.providers.oauth2.facebook.FacebookAuthProvider
+10060:com.feth.play.module.pa.providers.oauth1.twitter.TwitterAuthProvider
+10070:com.feth.play.module.pa.providers.oauth1.linkedin.LinkedinAuthProvider
+10120:com.feth.play.module.pa.providers.oauth2.github.GithubAuthProvider

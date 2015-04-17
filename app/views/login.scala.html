@@ -1,0 +1,28 @@
+@()
+
+@main("OrganiCity Scenarios") {
+
+    <div class="row">
+        <div class="col-md-12">
+            Sign in using...
+            <ul>
+            @com.feth.play.module.pa.views.html.forProviders() { p =>
+                <li><a href="@p.getUrl()">@p.getKey()</a></li>
+            }
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            Other OpenID provider
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            Sign up
+        </div>
+    </div>
+
+}
