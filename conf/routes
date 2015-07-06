@@ -15,6 +15,7 @@ GET           /scenarios/:id                controllers.ScenarioController.get(i
 DELETE        /scenarios/:id                controllers.ScenarioController.delete(id: String)
 
 # User CRUD functionality
+POST          /users/:id/roles              controllers.UserController.setRoles(id: String)
 GET           /users                        controllers.UserController.list
 POST          /users                        controllers.UserController.create
 GET           /users/:id                    controllers.UserController.get(id: String)

@@ -13,4 +13,7 @@ dist
 /.project
 /RUNNING_PID
 /.settings
-data/play2-elasticsearch
+data/play2-elasticsearchelasticsearch/node0
+elasticsearch/node0/
+elasticsearch/node1/
+conf/play-authenticate/*_credentials.conf

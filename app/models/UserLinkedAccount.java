@@ -7,17 +7,30 @@ import com.github.cleverage.elasticsearch.IndexUtils;
 import com.github.cleverage.elasticsearch.Indexable;
 
 import com.feth.play.module.pa.user.AuthUser;
+import com.github.cleverage.elasticsearch.annotations.IndexType;
 
+import java.net.URL;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
 
-@Entity
+@IndexType(name = "user_linked_account")
 public class UserLinkedAccount extends Index {
 
 	public static final String USER_ID = "user_id";
 	public static final String PROVIDER_KEY = "provider_key";
 	public static final String PROVIDER_USER_ID = "provider_user_id";
+
+	public String email;
+	public boolean emailIsVerified;
+	public String name;
+	public String firstName;
+	public String lastName;
+	public URL picture;
+	public String gender;
+	public Locale locale;
+	public String profile;
 
 	public String userId;
 	public String providerKey;

@@ -38,7 +38,7 @@ public class ScenarioController extends Controller {
             String qs = request().getQueryString("q");
             query.setBuilder(
                     multiMatchQuery(qs, Scenario.TITLE, Scenario.SUMMARY, Scenario.NARRATIVE)
-            );
+            ).from(0).size(Integer.MAX_VALUE);
             IndexResults<Scenario> search = finder().search(query);
             if (search.getTotalCount() == 0) {
                 scenarios = newArrayList();

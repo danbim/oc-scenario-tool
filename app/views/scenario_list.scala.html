@@ -1,12 +1,14 @@
 @(scenarios: List[models.Scenario], users: List[User])
 
+    @import be.objectify.deadbolt.java.views.html.subjectPresentOr
+
     @main("OrganiCity Scenarios") {
 
         @scenario_search_form(true)
 
         <div class="row">
             <div class="col-md-12">
-                &nbsp;
+                    &nbsp;
             </div>
         </div>
         <div class="row">
@@ -38,7 +40,11 @@
         <div class="row">
             <div class="col-md-6">
                 <h4>New Scenario</h4>
-                @scenario_form(Option.empty, users)
+                @subjectPresentOr() {
+                    @scenario_form(Option.empty, users)
+                } {
+                    You need to <a href="@routes.LoginController.login()">log in</a> to create a new scenario!
+                }
             </div>
         </div>
     }

@@ -1,0 +1,10 @@
+cluster.name : organicity_elasticsearch
+node.name    : "node1"
+node.master  : true
+node.data    : true
+path.data    : elasticsearch/node1/data
+path.logs    : elasticsearch/node1/log
+path.plugins : /usr/local/var/lib/elasticsearch/plugins
+network.host : 127.0.0.1
+discovery.zen.ping.multicast.enabled : false
+discovery.zen.ping.unicast.hosts     : ["localhost"]

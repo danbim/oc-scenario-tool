@@ -1,4 +1,4 @@
-package services;
+package auth;
 
 import models.User;
 import play.Application;
@@ -9,9 +9,9 @@ import com.feth.play.module.pa.service.UserServicePlugin;
 
 import java.util.Optional;
 
-public class MyUserServicePlugin extends UserServicePlugin {
+public class OrganiCityAuthenticationHandler extends UserServicePlugin {
 
-	public MyUserServicePlugin(final Application app) {
+	public OrganiCityAuthenticationHandler(final Application app) {
 		super(app);
 	}
 

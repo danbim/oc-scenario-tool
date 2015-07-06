@@ -6,6 +6,7 @@ import com.feth.play.module.pa.user.EmailIdentity;
 import com.feth.play.module.pa.user.NameIdentity;
 import com.github.cleverage.elasticsearch.*;
 import com.github.cleverage.elasticsearch.annotations.IndexType;
+import formatters.CommaSeparated;
 import org.elasticsearch.action.index.IndexResponse;
 import play.data.validation.Constraints;
 
@@ -16,7 +17,6 @@ import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 @IndexType(name = "user")
@@ -27,6 +27,7 @@ public class User extends Index {
     public static final String AUTH_ID = "auth_id";
     public static final String AUTH_PROVIDER = "auth_provider";
     public static final String LINKED_ACCOUNTS = "linked_accounts";
+    public static final String ROLES = "roles";
 
     public String name;
 
@@ -38,6 +39,9 @@ public class User extends Index {
     public String auth_provider;
 
     public List<UserLinkedAccount> linkedAccounts = newArrayList();
+
+    @CommaSeparated
+    public List<String> roles;
 
     public static Optional<User> findByAuthUserIdentity(AuthUserIdentity identity) {
 
@@ -98,14 +102,6 @@ public class User extends Index {
         return user;
     }
 
-    public void merge(final User otherUser) {
-        for (final UserLinkedAccount acc : otherUser.linkedAccounts) {
-            this.linkedAccounts.add(UserLinkedAccount.create(acc));
-        }
-        // TODO do all other merging stuff here - like resources, etc.
-        index();
-    }
-
     public static void merge(AuthUser oldUser, AuthUser newUser) {
         User localOldUser = User.findByAuthUserIdentity(oldUser).get();
         User localNewUser = User.findByAuthUserIdentity(newUser).get();
@@ -126,6 +122,14 @@ public class User extends Index {
         user.index();
     }
 
+    public void merge(final User otherUser) {
+        for (final UserLinkedAccount acc : otherUser.linkedAccounts) {
+            this.linkedAccounts.add(UserLinkedAccount.create(acc));
+        }
+        // TODO do all other merging stuff here - like resources, etc.
+        index();
+    }
+
     @Override
     public Map toIndex() {
 
@@ -136,6 +140,7 @@ public class User extends Index {
         map.put(AUTH_ID, auth_id);
         map.put(AUTH_PROVIDER, auth_provider);
         map.put(LINKED_ACCOUNTS, IndexUtils.toIndex(linkedAccounts));
+        map.put(ROLES, roles);
 
         return map;
     }
@@ -152,6 +157,8 @@ public class User extends Index {
         this.auth_id = (String) map.get(AUTH_ID);
         this.auth_provider = (String) map.get(AUTH_PROVIDER);
         this.linkedAccounts = IndexUtils.getIndexables(map, LINKED_ACCOUNTS, UserLinkedAccount.class);
+        //noinspection unchecked
+        this.roles = map.containsKey(ROLES) ? (List<String>) map.get(ROLES) : null;
 
         return this;
     }
