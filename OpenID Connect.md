@@ -16,9 +16,6 @@ User Attribute Mapping
 -	gender ("male", "female", ?)
 -	locale (e.g., de-DE)
 -	link (Google+ profile)
--	info
--	id
--	state
 
 ### Facebook
 
@@ -46,3 +43,24 @@ User Attribute Mapping
 -   login      string
 -   gravatarId null
 -   location   string
+
+### Union of Google, Facebook, Github
+
+-   id         string
+-	email      string    email
+-   name       string    full name
+-	firstName  string
+-	lastName   string
+-   link       string    github profile
+-   picture    URL
+-   bio        string
+-   blog       string    URL
+-   company    string
+-   login      string
+-	gender     string
+-   gravatarId string    email
+-   location   string
+-   locale     locale
+-   timezone   timezone
+-   updateTime datetime
+-   verified   boolean

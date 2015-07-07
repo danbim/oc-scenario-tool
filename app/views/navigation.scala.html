@@ -2,36 +2,41 @@
 @import be.objectify.deadbolt.java.views.html.{restrict, subjectNotPresent, subjectPresent}
 
 <nav class="navbar navbar-default navbar-static-top">
-	<ul class="nav navbar-nav">
 
-		@if(request().path().equals(routes.ScenarioController.list().url)) {
-			<li class="active"><a href="@routes.ScenarioController.list()">Scenarios</a></li>
-		} else {
-			<li><a href="@routes.ScenarioController.list()">Scenarios</a></li>
-		}
+	<div class="container-fluid">
 
-		@restrict(roles = la(as("admin"))) {
-			@if(request().path().equals(routes.UserController.list().url)) {
-				<li class="active"><a href="@routes.UserController.list()">Users</a></li>
+		<ul class="nav navbar-nav">
+
+			@if(request().path().equals(routes.ScenarioController.list().url)) {
+				<li class="active"><a href="@routes.ScenarioController.list()">Scenarios</a></li>
 			} else {
-				<li><a href="@routes.UserController.list()">Users</a></li>
+				<li><a href="@routes.ScenarioController.list()">Scenarios</a></li>
 			}
-		}
 
-	</ul>
-
-	<ul class="nav navbar-nav navbar-nav-right">
-		@subjectPresent() {
-			<li><a href="@com.feth.play.module.pa.controllers.routes.Authenticate.logout()">Logout</a></li>
-		}
-
-		@subjectNotPresent() {
-			@if(request().path().equals(routes.LoginController.login().url)) {
-				<li class="active"><a href="@routes.LoginController.login()">Login</a></li>
-			} else {
-				<li><a href="@routes.LoginController.login()">Login</a></li>
+			@restrict(roles = la(as("admin"))) {
+				@if(request().path().equals(routes.UserController.list().url)) {
+					<li class="active"><a href="@routes.UserController.list()">Users</a></li>
+				} else {
+					<li><a href="@routes.UserController.list()">Users</a></li>
+				}
 			}
-		}
-	</ul>
+
+		</ul>
+
+		<ul class="nav navbar-nav navbar-right">
+			@subjectPresent() {
+				<li><a href="@com.feth.play.module.pa.controllers.routes.Authenticate.logout()">Logout</a></li>
+			}
+
+			@subjectNotPresent() {
+				@if(request().path().equals(routes.LoginController.login().url)) {
+					<li class="active"><a href="@routes.LoginController.login()">Login</a></li>
+				} else {
+					<li><a href="@routes.LoginController.login()">Login</a></li>
+				}
+			}
+		</ul>
+
+	</div>
 
 </nav>

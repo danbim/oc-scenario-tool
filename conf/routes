@@ -21,8 +21,10 @@ POST          /users                        controllers.UserController.create
 GET           /users/:id                    controllers.UserController.get(id: String)
 DELETE        /users/:id                    controllers.UserController.delete(id: String)
 
+# Authentication
 GET           /login                        controllers.LoginController.login
-GET           /restricted                   controllers.Restricted.index
 GET           /logout                       com.feth.play.module.pa.controllers.Authenticate.logout
+GET           /signup                       controllers.LoginController.signup
+POST          /signup                       controllers.LoginController.doSignup
 GET           /auth/:provider               com.feth.play.module.pa.controllers.Authenticate.authenticate(provider: String)
 GET           /auth/:provider/denied        controllers.Application.oAuthDenied(provider: String)

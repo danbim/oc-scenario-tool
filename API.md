@@ -1,6 +1,13 @@
 OrganiCity Scenario Tool REST API Specification
 ===============================================
 
+Login
+-----
+
+```
+curl -v -H "Accept: application/json" http://localhost:9000/auth/google
+```
+
 Scenarios
 ---------
 
@@ -22,3 +29,14 @@ curl -v -H "Accept: application/json" http://localhost:9000/scenarios
   [...]
 ]
 ```
+
+Users
+-----
+
+GET http://localhost:9000/users returns a list of users.
+
+```
+curl -v -H "Accept: application/json" http://localhost:9000/users
+```
+
+Required: login, admin role

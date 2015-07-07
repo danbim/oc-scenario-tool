@@ -31,39 +31,45 @@ cd $APP_HOME; elasticsearch --config=elasticsearch/node0.yml
 cd $APP_HOME; elasticsearch --config=elasticsearch/node1.yml
 ```
 
-You should be able to check the ElasticSearch cluster state at http://localhost:9200/_plugin/gui/.
+You should be able to check the ElasticSearch cluster state by installing [elasticsearch-gui](https://github.com/jettro/elasticsearch-gui) and browsing to http://localhost:9200/_plugin/gui/.
 
-then fire up the Play Framework, either from your most beloved IDE or using
+Browsing the ElasticSearch indexes can be achieved by installing the [elasticsearch-head](http://mobz.github.io/elasticsearch-head/) plugin and browsing to http://localhost:9200/_plugin/head/.
+
+Then fire up the Play Framework, either from your most beloved IDE or using
 
 ```
 activator run
 ```
 
-Then browse to http://localhost:9000
+Browse to http://localhost:9000.
+
+ElasticSearch database
+----------------------
+
+[Client API documentation](https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/index.html)
 
 Authentication
 --------------
 
-The current implementation uses http://joscha.github.io/play-authenticate/ for user authentication with twitter, github,
-Facebook, Google and LinkedIn. If a user logs in for the first time a new user is created in the database. Any "user
-meta data" that the auth provider delivers (e.g., picture, gender, ...) is saved additionally as a linked account.
+The current implementation uses [play-authenticate](http://joscha.github.io/play-authenticate/) for user authentication with twitter, github, Facebook, Google and LinkedIn. If a user logs in for the first time a new user is created in the database. Any "user meta data" that the auth provider delivers (e.g., picture, gender, ...) is saved additionally as a linked account.
 
-If the same user logs in using a different auth provider he will be identified as an existing user by matching his email
-address. The "user meta data" delivered by the second (third, ...) auth provider will also be stored to another linked
-account.
+If the same user logs in using a different auth provider he will be identified as an existing user by matching his email address. The "user meta data" delivered by the second (third, ...) auth provider will also be stored to another linked account.
+
+Check out the [getting started guide](https://github.com/joscha/play-authenticate/blob/master/samples/java/Getting%20Started.md).
 
 App Accounts ca be set up here:
 
-Twitter  - 
-Google   - https://console.developers.google.com
-Facebook - https://developers.facebook.com/apps/
-Github   - https://github.com/settings/developers
-LinkedIn - https://www.linkedin.com/developer/apps
+-	Twitter: ?
+-	Google: https://console.developers.google.com
+-	Facebook: https://developers.facebook.com/apps/
+-	Github: https://github.com/settings/developers
+-	LinkedIn: https://www.linkedin.com/developer/apps
 
 TODOs:
-- Implement sign up and login with username / password credentials 
+
+-	Implement sign up and login with username / password credentials
 
 Authorization
 -------------
 
-Authorization is done via https://github.com/schaloner/deadbolt-2.
+Authorization is done via [deadbolt-2](https://github.com/schaloner/deadbolt-2).

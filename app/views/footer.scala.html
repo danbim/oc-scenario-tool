@@ -1,0 +1,11 @@
+@import com.feth.play.module.pa.views.html.currentAuth
+
+@currentAuth() { auth =>
+	@if(auth != null) {
+		<div class="row">
+			<div class="span12">
+				Logged in via '@auth.getProvider'
+			</div>
+		</div>
+	}
+}

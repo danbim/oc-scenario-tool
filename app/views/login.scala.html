@@ -2,27 +2,31 @@
 
 @main("OrganiCity Scenarios") {
 
-    <div class="row">
-        <div class="col-md-12">
-            Sign in using...
-            <ul>
-            @com.feth.play.module.pa.views.html.forProviders() { p =>
-                <li><a href="@p.getUrl()">@p.getKey()</a></li>
-            }
-            </ul>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-md-12">
+			Sign in using...
+			<ul>
+			@com.feth.play.module.pa.views.html.forProviders() { p =>
+				<li><a href="@p.getUrl()">@p.getKey()</a></li>
+			}
+			</ul>
+		</div>
+	</div>
 
-    <div class="row">
-        <div class="col-md-12">
-            TODO Log in using username / password
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-md-12">
+			<form method="post" action="@controllers.routes.LoginController.login()">
+				<input type="text" name="username" id="input_username" />
+				<input type="password" name="password" id="input_password"/>
+				<input type="submit" value="Login" />
+			</form>
+		</div>
+	</div>
 
-    <div class="row">
-        <div class="col-md-12">
-            TODO Sign up using username / password
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-md-12">
+			TODO Sign up using username / password
+		</div>
+	</div>
 
 }

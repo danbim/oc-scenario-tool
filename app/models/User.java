@@ -22,144 +22,144 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 @IndexType(name = "user")
 public class User extends Index {
 
-    public static final String NAME = "name";
-    public static final String EMAIL = "email";
-    public static final String AUTH_ID = "auth_id";
-    public static final String AUTH_PROVIDER = "auth_provider";
-    public static final String LINKED_ACCOUNTS = "linked_accounts";
-    public static final String ROLES = "roles";
+	public static final String NAME = "name";
+	public static final String EMAIL = "email";
+	public static final String AUTH_ID = "auth_id";
+	public static final String AUTH_PROVIDER = "auth_provider";
+	public static final String LINKED_ACCOUNTS = "linked_accounts";
+	public static final String ROLES = "roles";
 
-    public String name;
+	public String name;
 
-    @Constraints.Email
-    public String email;
+	@Constraints.Email
+	public String email;
 
-    public String auth_id;
+	public String auth_id;
 
-    public String auth_provider;
+	public String auth_provider;
 
-    public List<UserLinkedAccount> linkedAccounts = newArrayList();
+	public List<UserLinkedAccount> linkedAccounts = newArrayList();
 
-    @CommaSeparated
-    public List<String> roles;
+	@CommaSeparated
+	public List<String> roles;
 
-    public static Optional<User> findByAuthUserIdentity(AuthUserIdentity identity) {
+	public static Optional<User> findByAuthUserIdentity(AuthUserIdentity identity) {
 
-        Finder<User> finder = new Finder<>(User.class);
-        IndexQuery<User> query = new IndexQuery<>(User.class);
-        if (identity instanceof EmailIdentity) {
-            query.setBuilder(matchQuery(User.EMAIL, ((EmailIdentity) identity).getEmail()));
-        } else {
-            query.setBuilder(matchQuery(User.AUTH_ID, identity.getId()));
-        }
-        IndexResults<User> search = finder.search(query);
+		Finder<User> finder = new Finder<>(User.class);
+		IndexQuery<User> query = new IndexQuery<>(User.class);
+		if (identity instanceof EmailIdentity) {
+			query.setBuilder(matchQuery(User.EMAIL, ((EmailIdentity) identity).getEmail()));
+		} else {
+			query.setBuilder(matchQuery(User.AUTH_ID, identity.getId()));
+		}
+		IndexResults<User> search = finder.search(query);
 
-        if (search.getTotalCount() == 0) {
-            return Optional.empty();
-        }
+		if (search.getTotalCount() == 0) {
+			return Optional.empty();
+		}
 
-        return search.getResults().stream().findFirst();
-    }
+		return search.getResults().stream().findFirst();
+	}
 
-    public static boolean existsByAuthUserIdentity(AuthUser authUser) {
-        return findByAuthUserIdentity(authUser).isPresent();
-    }
+	public static boolean existsByAuthUserIdentity(AuthUser authUser) {
+		return findByAuthUserIdentity(authUser).isPresent();
+	}
 
-    public static User create(AuthUser authUser) {
+	public static User create(AuthUser authUser) {
 
-        User user = new User();
-        user.auth_id = authUser.getId();
-        user.auth_provider = authUser.getProvider();
+		User user = new User();
+		user.auth_id = authUser.getId();
+		user.auth_provider = authUser.getProvider();
 
-        user.linkedAccounts.add(UserLinkedAccount.create(user, authUser));
+		user.linkedAccounts.add(UserLinkedAccount.create(user, authUser));
 
-        if (authUser instanceof EmailIdentity) {
-            final EmailIdentity identity = (EmailIdentity) authUser;
-            // TODO validate email
-            // Remember, even when getting them from FB & Co., emails should be
-            // verified within the application as a security breach there might
-            // break your security as well!
-            // user.emailValidated = false;
-            user.email = identity.getEmail();
-        }
+		if (authUser instanceof EmailIdentity) {
+			final EmailIdentity identity = (EmailIdentity) authUser;
+			// TODO validate email
+			// Remember, even when getting them from FB & Co., emails should be
+			// verified within the application as a security breach there might
+			// break your security as well!
+			// user.emailValidated = false;
+			user.email = identity.getEmail();
+		}
 
-        if (authUser instanceof NameIdentity) {
-            final NameIdentity identity = (NameIdentity) authUser;
-            final String name = identity.getName();
-            if (name != null) {
-                user.name = name;
-            }
-        }
+		if (authUser instanceof NameIdentity) {
+			final NameIdentity identity = (NameIdentity) authUser;
+			final String name = identity.getName();
+			if (name != null) {
+				user.name = name;
+			}
+		}
 
-        IndexResponse response = user.index();
+		IndexResponse response = user.index();
 
-        if (!response.isCreated()) {
-            throw new RuntimeException("User could not be created");
-        }
+		if (!response.isCreated()) {
+			throw new RuntimeException("User could not be created");
+		}
 
-        user.id = response.getId();
+		user.id = response.getId();
 
-        return user;
-    }
+		return user;
+	}
 
-    public static void merge(AuthUser oldUser, AuthUser newUser) {
-        User localOldUser = User.findByAuthUserIdentity(oldUser).get();
-        User localNewUser = User.findByAuthUserIdentity(newUser).get();
-        localOldUser.merge(localNewUser);
-    }
+	public static void merge(AuthUser oldUser, AuthUser newUser) {
+		User localOldUser = User.findByAuthUserIdentity(oldUser).get();
+		User localNewUser = User.findByAuthUserIdentity(newUser).get();
+		localOldUser.merge(localNewUser);
+	}
 
-    public static void addLinkedAccount(AuthUser oldUser, AuthUser newUser) {
+	public static void addLinkedAccount(AuthUser oldUser, AuthUser newUser) {
 
-        final Optional<User> u = User.findByAuthUserIdentity(oldUser);
+		final Optional<User> u = User.findByAuthUserIdentity(oldUser);
 
-        if (!u.isPresent()) {
-            throw new RuntimeException("User was not found when trying to add linked account!");
-        }
+		if (!u.isPresent()) {
+			throw new RuntimeException("User was not found when trying to add linked account!");
+		}
 
-        User user = u.get();
+		User user = u.get();
 
-        user.linkedAccounts.add(UserLinkedAccount.create(user, newUser));
-        user.index();
-    }
+		user.linkedAccounts.add(UserLinkedAccount.create(user, newUser));
+		user.index();
+	}
 
-    public void merge(final User otherUser) {
-        for (final UserLinkedAccount acc : otherUser.linkedAccounts) {
-            this.linkedAccounts.add(UserLinkedAccount.create(acc));
-        }
-        // TODO do all other merging stuff here - like resources, etc.
-        index();
-    }
+	public void merge(final User otherUser) {
+		for (final UserLinkedAccount acc : otherUser.linkedAccounts) {
+			this.linkedAccounts.add(UserLinkedAccount.create(acc));
+		}
+		// TODO do all other merging stuff here - like resources, etc.
+		index();
+	}
 
-    @Override
-    public Map toIndex() {
+	@Override
+	public Map toIndex() {
 
-        HashMap<String, Object> map = newHashMap();
+		HashMap<String, Object> map = newHashMap();
 
-        map.put(NAME, name);
-        map.put(EMAIL, email);
-        map.put(AUTH_ID, auth_id);
-        map.put(AUTH_PROVIDER, auth_provider);
-        map.put(LINKED_ACCOUNTS, IndexUtils.toIndex(linkedAccounts));
-        map.put(ROLES, roles);
+		map.put(NAME, name);
+		map.put(EMAIL, email);
+		map.put(AUTH_ID, auth_id);
+		map.put(AUTH_PROVIDER, auth_provider);
+		map.put(LINKED_ACCOUNTS, IndexUtils.toIndex(linkedAccounts));
+		map.put(ROLES, roles);
 
-        return map;
-    }
+		return map;
+	}
 
-    @Override
-    public Indexable fromIndex(Map map) {
+	@Override
+	public Indexable fromIndex(Map map) {
 
-        if (map == null) {
-            return null;
-        }
+		if (map == null) {
+			return null;
+		}
 
-        this.name = (String) map.get(NAME);
-        this.email = (String) map.get(EMAIL);
-        this.auth_id = (String) map.get(AUTH_ID);
-        this.auth_provider = (String) map.get(AUTH_PROVIDER);
-        this.linkedAccounts = IndexUtils.getIndexables(map, LINKED_ACCOUNTS, UserLinkedAccount.class);
-        //noinspection unchecked
-        this.roles = map.containsKey(ROLES) ? (List<String>) map.get(ROLES) : null;
+		this.name = (String) map.get(NAME);
+		this.email = (String) map.get(EMAIL);
+		this.auth_id = (String) map.get(AUTH_ID);
+		this.auth_provider = (String) map.get(AUTH_PROVIDER);
+		this.linkedAccounts = IndexUtils.getIndexables(map, LINKED_ACCOUNTS, UserLinkedAccount.class);
+		//noinspection unchecked
+		this.roles = map.containsKey(ROLES) ? (List<String>) map.get(ROLES) : null;
 
-        return this;
-    }
+		return this;
+	}
 }
