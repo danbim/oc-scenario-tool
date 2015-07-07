@@ -1,9 +1,9 @@
 import org.junit.Test;
-import play.mvc.Content;
 import play.twirl.api.Html;
 import views.html.index;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.contentType;
 
@@ -14,17 +14,17 @@ import static play.test.Helpers.contentType;
  */
 public class ApplicationTest {
 
-    @Test
-    public void simpleCheck() {
-        int a = 1 + 1;
-        assertThat(a).isEqualTo(2);
-    }
+	@Test
+	public void simpleCheck() {
+		int a = 1 + 1;
+		assertEquals(a, 2);
+	}
 
-    @Test
-    public void renderTemplate() {
-        Html html = index.render();
-        assertThat(contentType(html)).isEqualTo("text/html");
-        assertThat(contentAsString(html)).contains("Your new application is ready.");
-    }
+	@Test
+	public void renderTemplate() {
+		Html html = index.render();
+		assertEquals(contentType(html), "text/html");
+		assertTrue(contentAsString(html).contains("Your new application is ready."));
+	}
 
 }

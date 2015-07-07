@@ -1,6 +1,8 @@
 OrganiCity Scenario Tool REST API Specification
 ===============================================
 
+See the [cURL manual](http://curl.haxx.se/docs/httpscripting.html) for command tweaks!
+
 Login
 -----
 

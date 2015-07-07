@@ -1,19 +1,19 @@
 package models;
 
-import javax.persistence.Entity;
-
-import com.github.cleverage.elasticsearch.Index;
-import com.github.cleverage.elasticsearch.IndexUtils;
-import com.github.cleverage.elasticsearch.Indexable;
-
 import com.feth.play.module.pa.user.AuthUser;
+import com.github.cleverage.elasticsearch.Index;
+import com.github.cleverage.elasticsearch.Indexable;
 import com.github.cleverage.elasticsearch.annotations.IndexType;
 
 import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static models.Helpers.findSingle;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 @IndexType(name = "user_linked_account")
 public class UserLinkedAccount extends Index {
@@ -43,13 +43,20 @@ public class UserLinkedAccount extends Index {
 		ret.providerUserId = authUser.getId();
 		return ret;
 	}
-	
+
 	public static UserLinkedAccount create(final UserLinkedAccount acc) {
 		final UserLinkedAccount ret = new UserLinkedAccount();
 		ret.userId = acc.userId;
 		ret.providerKey = acc.providerKey;
 		ret.providerUserId = acc.providerUserId;
 		return ret;
+	}
+
+	public static Optional<UserLinkedAccount> findByProviderKey(final User user, String key) {
+		return findSingle(UserLinkedAccount.class, boolQuery()
+						.must(matchQuery(USER_ID, user.getId()))
+						.must(matchQuery(PROVIDER_KEY, key))
+		);
 	}
 
 	@Override

@@ -72,4 +72,4 @@ TODOs:
 Authorization
 -------------
 
-Authorization is done via [deadbolt-2](https://github.com/schaloner/deadbolt-2).
+Authorization is done via [deadbolt-2](http://deadbolt.ws/).

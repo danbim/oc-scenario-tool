@@ -25,14 +25,14 @@
 
 		<ul class="nav navbar-nav navbar-right">
 			@subjectPresent() {
-				<li><a href="@com.feth.play.module.pa.controllers.routes.Authenticate.logout()">Logout</a></li>
+				<li><a href="@routes.Application.logout()">Logout</a></li>
 			}
 
 			@subjectNotPresent() {
-				@if(request().path().equals(routes.LoginController.login().url)) {
-					<li class="active"><a href="@routes.LoginController.login()">Login</a></li>
+				@if(request().path().equals(routes.Application.login().url)) {
+					<li class="active"><a href="@routes.Application.login()">Login</a></li>
 				} else {
-					<li><a href="@routes.LoginController.login()">Login</a></li>
+					<li><a href="@routes.Application.login()">Login</a></li>
 				}
 			}
 		</ul>

@@ -6,10 +6,10 @@ import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
 import com.google.inject.Inject;
 import controllers.routes;
-import models.LinkedAccount;
 import models.TokenAction;
-import models.TokenAction.Type;
+import models.TokenAction.TokenType;
 import models.User;
+import models.UserLinkedAccount;
 import play.Application;
 import play.Logger;
 import play.data.Form;
@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static play.data.Form.form;
@@ -75,10 +76,10 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 	}
 
 	@Override
-	protected com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider.SignupResult signupUser(final MyUsernamePasswordAuthUser user) {
-		final User u = User.findByUsernamePasswordIdentity(user);
-		if (u != null) {
-			if (u.emailValidated) {
+	protected UsernamePasswordAuthProvider.SignupResult signupUser(final MyUsernamePasswordAuthUser user) {
+		final Optional<User> u = User.findByUsernamePasswordIdentity(user);
+		if (u.isPresent()) {
+			if (u.get().emailValidated) {
 				// This user exists, has its email validated and is active
 				return SignupResult.USER_EXISTS;
 			} else {
@@ -98,19 +99,17 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 	}
 
 	@Override
-	protected com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider.LoginResult loginUser(
-			final MyLoginUsernamePasswordAuthUser authUser) {
-		final User u = User.findByUsernamePasswordIdentity(authUser);
-		if (u == null) {
+	protected UsernamePasswordAuthProvider.LoginResult loginUser(MyLoginUsernamePasswordAuthUser authUser) {
+		final Optional<User> u = User.findByUsernamePasswordIdentity(authUser);
+		if (!u.isPresent()) {
 			return LoginResult.NOT_FOUND;
 		} else {
-			if (!u.emailValidated) {
+			if (!u.get().emailValidated) {
 				return LoginResult.USER_UNVERIFIED;
 			} else {
-				for (final LinkedAccount acc : u.linkedAccounts) {
+				for (final UserLinkedAccount acc : u.get().linkedAccounts) {
 					if (getKey().equals(acc.providerKey)) {
-						if (authUser.checkPassword(acc.providerUserId,
-								authUser.getPassword())) {
+						if (authUser.checkPassword(acc.providerUserId, authUser.getPassword())) {
 							// Password was correct
 							return LoginResult.USER_LOGGED_IN;
 						} else {
@@ -193,19 +192,19 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 
 	@Override
 	protected String generateVerificationRecord(final MyUsernamePasswordAuthUser user) {
-		return generateVerificationRecord(User.findByAuthUserIdentity(user));
+		return generateVerificationRecord(User.findByAuthUserIdentity(user).get());
 	}
 
 	protected String generateVerificationRecord(final User user) {
 		final String token = generateToken();
 		// Do database actions, etc.
-		TokenAction.create(Type.EMAIL_VERIFICATION, token, user);
+		TokenAction.create(TokenType.EMAIL_VERIFICATION, token, user);
 		return token;
 	}
 
 	protected String generatePasswordResetRecord(final User u) {
 		final String token = generateToken();
-		TokenAction.create(Type.PASSWORD_RESET, token, u);
+		TokenAction.create(TokenType.PASSWORD_RESET, token, u);
 		return token;
 	}
 
@@ -283,11 +282,7 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 				ret = htmlRender.invoke(null, url, token, name, email)
 						.toString();
 
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
+			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
 		}
