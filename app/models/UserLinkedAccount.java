@@ -38,7 +38,7 @@ public class UserLinkedAccount extends Index {
 
 	public static UserLinkedAccount create(User user, final AuthUser authUser) {
 		final UserLinkedAccount ret = new UserLinkedAccount();
-		ret.userId = user.getId();
+		ret.userId = user.id;
 		ret.providerKey = authUser.getProvider();
 		ret.providerUserId = authUser.getId();
 		return ret;
@@ -54,7 +54,7 @@ public class UserLinkedAccount extends Index {
 
 	public static Optional<UserLinkedAccount> findByProviderKey(final User user, String key) {
 		return findSingle(UserLinkedAccount.class, boolQuery()
-						.must(matchQuery(USER_ID, user.getId()))
+						.must(matchQuery(USER_ID, user.id))
 						.must(matchQuery(PROVIDER_KEY, key))
 		);
 	}

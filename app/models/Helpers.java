@@ -30,7 +30,7 @@ public abstract class Helpers {
 		Index.Finder<T> finder = new Index.Finder<>(clazz);
 		IndexQuery<T> query = new IndexQuery<>(clazz);
 		query.setBuilder(queryBuilder);
-		return finder.search(query).getResults();
+		return finder.search(query).results;
 	}
 
 	public static <T extends Index> Optional<T> findById(Class<T> clazz, String id) {

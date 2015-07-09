@@ -7,10 +7,12 @@ import com.feth.play.module.pa.user.AuthUser;
 import com.feth.play.module.pa.user.AuthUserIdentity;
 import com.feth.play.module.pa.service.UserServicePlugin;
 
+import javax.inject.Inject;
 import java.util.Optional;
 
 public class OrganiCityAuthenticationHandler extends UserServicePlugin {
 
+	@Inject
 	public OrganiCityAuthenticationHandler(final Application app) {
 		super(app);
 	}

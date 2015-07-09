@@ -203,7 +203,7 @@ public class User extends Index {
 		map.put(FIRST_NAME, firstName);
 		map.put(LAST_NAME, lastName);
 		map.put(GENDER, gender);
-		map.put(LOCALE, LocaleUtils.toString(locale));
+		map.put(LOCALE, locale == null ? null : LocaleUtils.toString(locale));
 		map.put(PROFILE_LINK, profileLink);
 		map.put(EMAIL, email);
 		map.put(EMAIL_VALIDATED, emailValidated);
@@ -226,10 +226,18 @@ public class User extends Index {
 		firstName = (String) map.get(FIRST_NAME);
 		lastName = (String) map.get(LAST_NAME);
 		gender = (String) map.get(GENDER);
-		locale = LocaleUtils.parse((String) map.get(LOCALE));
+		if (map.get(LOCALE) == null) {
+			locale = Locale.getDefault();
+		} else {
+			locale = LocaleUtils.parse((String) map.get(LOCALE));
+		}
 		profileLink = (String) map.get(profileLink);
 		email = (String) map.get(EMAIL);
-		emailValidated = (boolean) map.get(EMAIL_VALIDATED);
+		if (map.get(EMAIL_VALIDATED) == null) {
+			emailValidated = false;
+		} else {
+			emailValidated = (boolean) map.get(EMAIL_VALIDATED);
+		}
 		auth_id = (String) map.get(AUTH_ID);
 		auth_provider = (String) map.get(AUTH_PROVIDER);
 		linkedAccounts = IndexUtils.getIndexables(map, LINKED_ACCOUNTS, UserLinkedAccount.class);

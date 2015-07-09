@@ -56,7 +56,7 @@ public class TokenAction extends Index {
 	public static void deleteByUserAndType(final User u, final TokenType tokenType) {
 
 		BoolQueryBuilder query = boolQuery()
-				.must(matchQuery("user", u.getId()))
+				.must(matchQuery("user", u.id))
 				.must(matchQuery("type", tokenType.toString()));
 
 		boolean allRemoved = Helpers.find(TokenAction.class,

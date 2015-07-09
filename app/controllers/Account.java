@@ -18,6 +18,8 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.account.*;
 
+import javax.inject.Inject;
+
 import static play.data.Form.form;
 
 public class Account extends Controller {
@@ -25,20 +27,26 @@ public class Account extends Controller {
 	private static final Form<Accept> ACCEPT_FORM = form(Accept.class);
 	private static final Form<Account.PasswordChange> PASSWORD_CHANGE_FORM = form(Account.PasswordChange.class);
 
+	private final Application application;
+
+	@Inject
+	public Account(Application application) {
+		this.application = application;
+	}
+
 	@SubjectPresent
-	public static Result link() {
-		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
+	public Result link() {
+		Authenticate.noCache(response());
 		return ok(link.render());
 	}
 
 	@Restrict(@Group(Application.USER_ROLE))
-	public static Result verifyEmail() {
+	public Result verifyEmail() {
 		Authenticate.noCache(response());
-		final User user = Application.getLocalUser(session()).get();
+		final User user = application.getLocalUser(session()).get();
 		if (user.emailValidated) {
 			// E-Mail has been validated already
-			flash(Application.FLASH_MESSAGE_KEY,
-					Messages.get("playauthenticate.verify_email.error.already_validated"));
+			flash(Application.FLASH_MESSAGE_KEY, Messages.get("playauthenticate.verify_email.error.already_validated"));
 		} else if (user.email != null && !user.email.trim().isEmpty()) {
 			flash(Application.FLASH_MESSAGE_KEY, Messages.get(
 					"playauthenticate.verify_email.message.instructions_sent",
@@ -53,9 +61,9 @@ public class Account extends Controller {
 	}
 
 	@Restrict(@Group(Application.USER_ROLE))
-	public static Result changePassword() {
-		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
-		final User u = Application.getLocalUser(session()).get();
+	public Result changePassword() {
+		Authenticate.noCache(response());
+		final User u = application.getLocalUser(session()).get();
 		if (!u.emailValidated) {
 			return ok(unverified.render());
 		} else {
@@ -64,15 +72,15 @@ public class Account extends Controller {
 	}
 
 	@Restrict(@Group(Application.USER_ROLE))
-	public static Result doChangePassword() {
-		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
+	public Result doChangePassword() {
+		Authenticate.noCache(response());
 		final Form<Account.PasswordChange> filledForm = PASSWORD_CHANGE_FORM
 				.bindFromRequest();
 		if (filledForm.hasErrors()) {
 			// User did not select whether to link or not link
 			return badRequest(password_change.render(filledForm));
 		} else {
-			final User user = Application.getLocalUser(session()).get();
+			final User user = application.getLocalUser(session()).get();
 			final String newPassword = filledForm.get().password;
 			user.changePassword(new MyUsernamePasswordAuthUser(newPassword),
 					true);
@@ -83,8 +91,8 @@ public class Account extends Controller {
 	}
 
 	@SubjectPresent
-	public static Result askLink() {
-		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
+	public Result askLink() {
+		Authenticate.noCache(response());
 		final AuthUser u = PlayAuthenticate.getLinkUser(session());
 		if (u == null) {
 			// account to link could not be found, silently redirect to login
@@ -94,8 +102,8 @@ public class Account extends Controller {
 	}
 
 	@SubjectPresent
-	public static Result doLink() {
-		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
+	public Result doLink() {
+		Authenticate.noCache(response());
 		final AuthUser u = PlayAuthenticate.getLinkUser(session());
 		if (u == null) {
 			// account to link could not be found, silently redirect to login
@@ -118,8 +126,8 @@ public class Account extends Controller {
 	}
 
 	@SubjectPresent
-	public static Result askMerge() {
-		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
+	public Result askMerge() {
+		Authenticate.noCache(response());
 		// this is the currently logged in user
 		final AuthUser aUser = PlayAuthenticate.getUser(session());
 
@@ -136,8 +144,8 @@ public class Account extends Controller {
 	}
 
 	@SubjectPresent
-	public static Result doMerge() {
-		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
+	public Result doMerge() {
+		Authenticate.noCache(response());
 		// this is the currently logged in user
 		final AuthUser aUser = PlayAuthenticate.getUser(session());
 

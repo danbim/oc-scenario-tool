@@ -13,8 +13,9 @@ import play.data.Form;
 import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.account.signup.exists;
+import views.html.account.signup.*;
 
+import javax.inject.Inject;
 import java.util.Optional;
 
 import static play.data.Form.form;
@@ -24,27 +25,34 @@ public class Signup extends Controller {
 	private static final Form<PasswordReset> PASSWORD_RESET_FORM = form(PasswordReset.class);
 	private static final Form<MyIdentity> FORGOT_PASSWORD_FORM = form(MyIdentity.class);
 
-	public static Result unverified() {
-		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
-		return ok(views.html.account.signup.unverified.render());
+	private final Application application;
+
+	@Inject
+	public Signup(Application application) {
+		this.application = application;
 	}
 
-	public static Result forgotPassword(final String email) {
+	public Result unverified() {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
+		return ok(unverified.render());
+	}
+
+	public Result forgotPassword(final String email) {
+		Authenticate.noCache(response());
 		Form<MyIdentity> form = FORGOT_PASSWORD_FORM;
 		if (email != null && !email.trim().isEmpty()) {
 			form = FORGOT_PASSWORD_FORM.fill(new MyIdentity(email));
 		}
-		return ok(views.html.account.signup.password_forgot.render(form));
+		return ok(password_forgot.render(form));
 	}
 
-	public static Result doForgotPassword() {
+	public Result doForgotPassword() {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
 		final Form<MyIdentity> filledForm = FORGOT_PASSWORD_FORM
 				.bindFromRequest();
 		if (filledForm.hasErrors()) {
 			// User did not fill in his/her email
-			return badRequest(views.html.account.signup.password_forgot.render(filledForm));
+			return badRequest(password_forgot.render(filledForm));
 		} else {
 			// The email address given *BY AN UNKNWON PERSON* to the form - we
 			// should find out if we actually have a user with this email
@@ -99,7 +107,7 @@ public class Signup extends Controller {
 	 * @param tokenType
 	 * @return
 	 */
-	private static TokenAction tokenIsValid(final String token, final TokenType tokenType) {
+	private TokenAction tokenIsValid(final String token, final TokenType tokenType) {
 		if (token != null && !token.trim().isEmpty()) {
 			final Optional<TokenAction> ta = TokenAction.findByToken(token, tokenType);
 			if (ta.isPresent() && ta.get().isValid()) {
@@ -109,28 +117,28 @@ public class Signup extends Controller {
 		return null;
 	}
 
-	public static Result resetPassword(final String token) {
+	public Result resetPassword(final String token) {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
 		final TokenAction ta = tokenIsValid(token, TokenType.PASSWORD_RESET);
 		if (ta == null) {
-			return badRequest(views.html.account.signup.no_token_or_invalid.render());
+			return badRequest(no_token_or_invalid.render());
 		}
 
-		return ok(views.html.account.signup.password_reset.render(PASSWORD_RESET_FORM.fill(new PasswordReset(token))));
+		return ok(password_reset.render(PASSWORD_RESET_FORM.fill(new PasswordReset(token))));
 	}
 
-	public static Result doResetPassword() {
+	public Result doResetPassword() {
 		Authenticate.noCache(response());
 		final Form<PasswordReset> filledForm = PASSWORD_RESET_FORM.bindFromRequest();
 		if (filledForm.hasErrors()) {
-			return badRequest(views.html.account.signup.password_reset.render(filledForm));
+			return badRequest(password_reset.render(filledForm));
 		} else {
 			final String token = filledForm.get().token;
 			final String newPassword = filledForm.get().password;
 
 			final TokenAction ta = tokenIsValid(token, TokenType.PASSWORD_RESET);
 			if (ta == null) {
-				return badRequest(views.html.account.signup.no_token_or_invalid.render());
+				return badRequest(no_token_or_invalid.render());
 			}
 			final Optional<User> u = User.findById(ta.user);
 			try {
@@ -159,21 +167,21 @@ public class Signup extends Controller {
 		}
 	}
 
-	public static Result oAuthDenied(final String getProviderKey) {
+	public Result oAuthDenied(final String getProviderKey) {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
-		return ok(views.html.account.signup.oAuthDenied.render(getProviderKey));
+		return ok(oAuthDenied.render(getProviderKey));
 	}
 
-	public static Result exists() {
+	public Result exists() {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
 		return ok(exists.render());
 	}
 
-	public static Result verify(final String token) {
+	public Result verify(final String token) {
 		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
 		final TokenAction ta = tokenIsValid(token, TokenType.EMAIL_VERIFICATION);
 		if (ta == null) {
-			return badRequest(views.html.account.signup.no_token_or_invalid.render());
+			return badRequest(no_token_or_invalid.render());
 		}
 		final Optional<User> user = User.findById(ta.user);
 		if (!user.isPresent()) {
@@ -183,7 +191,7 @@ public class Signup extends Controller {
 		User.verify(user.get());
 		TokenAction.deleteByUserAndType(user.get(), TokenAction.TokenType.EMAIL_VERIFICATION);
 		flash(Application.FLASH_MESSAGE_KEY, Messages.get("playauthenticate.verify_email.success", user.get().email));
-		if (Application.getLocalUser(session()) != null) {
+		if (application.getLocalUser(session()) != null) {
 			return redirect(routes.Application.index());
 		} else {
 			return redirect(routes.Application.login());

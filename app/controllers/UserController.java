@@ -2,7 +2,6 @@ package controllers;
 
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
-import be.objectify.deadbolt.java.actions.SubjectPresent;
 import com.github.cleverage.elasticsearch.Index;
 import com.github.cleverage.elasticsearch.IndexQuery;
 import com.github.cleverage.elasticsearch.IndexResults;
@@ -10,7 +9,6 @@ import com.google.common.base.Splitter;
 import models.User;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
@@ -22,13 +20,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.elasticsearch.index.query.QueryBuilders.idsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
 @Restrict(@Group("admin"))
 public class UserController extends Controller {
 
-    public static Result list() {
+    public Result list() {
 
         List<User> users;
 
@@ -41,14 +38,14 @@ public class UserController extends Controller {
 
             IndexResults<User> search = finder().search(query);
 
-            if (search.getTotalCount() == 0) {
+            if (search.totalCount == 0) {
                 users = newArrayList();
             } else {
-                users = search.getResults();
+                users = search.results;
             }
 
         } else {
-            users = finder().all().getResults();
+            users = finder().all().results;
         }
 
         if (request().accepts("text/html")) {
@@ -58,7 +55,7 @@ public class UserController extends Controller {
         return ok(Json.toJson(users));
     }
 
-    public static Result setRoles(String userId) {
+    public Result setRoles(String userId) {
 
         User user = finder().byId(userId);
         if (user == null) {
@@ -79,7 +76,7 @@ public class UserController extends Controller {
         return ok(Json.toJson(user));
     }
 
-    public static Result get(String id) {
+    public Result get(String id) {
         User user = finder().byId(id);
         if (user == null) {
             return notFound();
@@ -87,7 +84,7 @@ public class UserController extends Controller {
         return ok(Json.toJson(user));
     }
 
-    public static Result create() {
+    public Result create() {
         Form<User> form = new Form<>(User.class);
         User user = form.bindFromRequest().get();
         IndexResponse indexResponse = user.index();
@@ -99,11 +96,11 @@ public class UserController extends Controller {
         return internalServerError();
     }
 
-    private static Index.Finder<User> finder() {
+    private Index.Finder<User> finder() {
         return new Index.Finder<>(User.class);
     }
 
-    public static Result delete(String id) {
+    public Result delete(String id) {
 
         User user = finder().byId(id);
 

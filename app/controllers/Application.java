@@ -26,36 +26,36 @@ public class Application extends Controller {
 
 	public static final String USER_ROLE = "user";
 
-    public static Result index() {
+    public Result index() {
         return ok(index.render());
     }
 
 	@Restrict(@Group(Application.USER_ROLE))
-	public static Result profile() {
+	public Result profile() {
 		final User localUser = getLocalUser(session()).get();
 		return ok(profile.render(localUser));
 	}
 
-	public static Result login() {
+	public Result login() {
 		return ok(login.render());
 	}
 
-	public static Result logout() {
+	public Result logout() {
 		return Authenticate.logout();
 	}
 
-	public static Result signup() {
+	public Result signup() {
 		return ok(signup.render(MyUsernamePasswordAuthProvider.SIGNUP_FORM));
 	}
 
-	public static Result authenticate(String provider) {
+	public Result authenticate(String provider) {
 		return Authenticate.authenticate(provider);
 	}
 
-	public static Result doSignup() {
-		com.feth.play.module.pa.controllers.Authenticate.noCache(response());
-		final Form<MyUsernamePasswordAuthProvider.MySignup> filledForm = MyUsernamePasswordAuthProvider.SIGNUP_FORM
-				.bindFromRequest();
+	public Result doSignup() {
+		Authenticate.noCache(response());
+		Form<MyUsernamePasswordAuthProvider.MySignup> filledForm =
+				MyUsernamePasswordAuthProvider.SIGNUP_FORM.bindFromRequest();
 		if (filledForm.hasErrors()) {
 			// User did not fill everything properly
 			return badRequest(signup.render(filledForm));
@@ -67,13 +67,13 @@ public class Application extends Controller {
 		}
 	}
 
-    public static Result oAuthDenied(final String providerKey) {
+    public Result oAuthDenied(final String providerKey) {
         Authenticate.noCache(response());
         flash(FLASH_ERROR_KEY, "You need to accept the OAuth connection in order to use this website!");
         return redirect(controllers.routes.Application.index());
     }
 
-    public static Optional<User> getLocalUser(final Http.Session session) {
+    public Optional<User> getLocalUser(final Http.Session session) {
         return User.findByAuthUserIdentity(PlayAuthenticate.getUser(session));
     }
 

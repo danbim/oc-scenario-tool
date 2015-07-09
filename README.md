@@ -51,7 +51,7 @@ ElasticSearch database
 Authentication
 --------------
 
-The current implementation uses [play-authenticate](http://joscha.github.io/play-authenticate/) for user authentication with twitter, github, Facebook, Google and LinkedIn. If a user logs in for the first time a new user is created in the database. Any "user meta data" that the auth provider delivers (e.g., picture, gender, ...) is saved additionally as a linked account.
+The current implementation uses [play-authenticate](http://joscha.github.io/play-authenticate/) for user authentication with twitter, github, Facebook, and Google. If a user logs in for the first time a new user is created in the database. Any "user meta data" that the auth provider delivers (e.g., picture, gender, ...) is saved additionally as a linked account.
 
 If the same user logs in using a different auth provider he will be identified as an existing user by matching his email address. The "user meta data" delivered by the second (third, ...) auth provider will also be stored to another linked account.
 
@@ -63,7 +63,6 @@ App Accounts ca be set up here:
 -	Google: https://console.developers.google.com
 -	Facebook: https://developers.facebook.com/apps/
 -	Github: https://github.com/settings/developers
--	LinkedIn: https://www.linkedin.com/developer/apps
 
 TODOs:
 

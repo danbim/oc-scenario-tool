@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
   "com.google.guava" % "guava" % "18.0",
   "com.feth" %% "play-authenticate" % "0.7.0-SNAPSHOT",
   "be.objectify" %% "deadbolt-java" % "2.4.0",
-  ("com.clever-age" % "play2-elasticsearch" % "1.1.0")
+  ("com.clever-age" % "play2-elasticsearch" % "1.5-SNAPSHOT")
     .exclude("com.typesafe.play", "play-functional_2.10")
     .exclude("com.typesafe.akka", "akka-actor_2.10")
     .exclude("com.typesafe.play", "play-json_2.10")
@@ -28,5 +28,5 @@ libraryDependencies ++= Seq(
 )
 
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-
+routesGenerator := InjectedRoutesGenerator
 unmanagedResourceDirectories in Test <+= baseDirectory(_ / "target/web/public/test")

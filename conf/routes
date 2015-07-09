@@ -3,48 +3,48 @@
 # ~~~~
 
 # Home page
-GET           /                                      controllers.Application.index
+GET           /                                      @controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                          controllers.Assets.at(path="/public", file)
 
 # Scenario CRUD functionality
-GET           /scenarios                             controllers.ScenarioController.list
-POST          /scenarios                             controllers.ScenarioController.create
-GET           /scenarios/:id                         controllers.ScenarioController.get(id: String)
-DELETE        /scenarios/:id                         controllers.ScenarioController.delete(id: String)
+GET           /scenarios                             @controllers.ScenarioController.list
+POST          /scenarios                             @controllers.ScenarioController.create
+GET           /scenarios/:id                         @controllers.ScenarioController.get(id: String)
+DELETE        /scenarios/:id                         @controllers.ScenarioController.delete(id: String)
 
 # User CRUD functionality
-POST          /users/:id/roles                       controllers.UserController.setRoles(id: String)
-GET           /users                                 controllers.UserController.list
-POST          /users                                 controllers.UserController.create
-GET           /users/:id                             controllers.UserController.get(id: String)
-DELETE        /users/:id                             controllers.UserController.delete(id: String)
+POST          /users/:id/roles                       @controllers.UserController.setRoles(id: String)
+GET           /users                                 @controllers.UserController.list
+POST          /users                                 @controllers.UserController.create
+GET           /users/:id                             @controllers.UserController.get(id: String)
+DELETE        /users/:id                             @controllers.UserController.delete(id: String)
 
 # Authentication and Account Management
-GET           /profile                               controllers.Application.profile
+GET           /profile                               @controllers.Application.profile
 
-GET           /accounts/unverified                   controllers.Signup.unverified
-GET           /authenticate/:provider/denied         controllers.Signup.oAuthDenied(provider: String)
-GET           /accounts/verify/:token                controllers.Signup.verify(token: String)
-GET           /accounts/exists                       controllers.Signup.exists
-GET           /accounts/password/reset/:token        controllers.Signup.resetPassword(token: String)
-POST          /accounts/password/reset               controllers.Signup.doResetPassword
+GET           /accounts/unverified                   @controllers.Signup.unverified
+GET           /authenticate/:provider/denied         @controllers.Signup.oAuthDenied(provider: String)
+GET           /accounts/verify/:token                @controllers.Signup.verify(token: String)
+GET           /accounts/exists                       @controllers.Signup.exists
+GET           /accounts/password/reset/:token        @controllers.Signup.resetPassword(token: String)
+POST          /accounts/password/reset               @controllers.Signup.doResetPassword
 
-GET           /accounts/password/change              controllers.Account.changePassword
-POST          /accounts/password/change              controllers.Account.doChangePassword
-GET           /accounts/verify                       controllers.Account.verifyEmail
-GET           /accounts/add                          controllers.Account.link
-GET           /accounts/link                         controllers.Account.askLink
-POST          /accounts/link                         controllers.Account.doLink
-GET           /accounts/merge                        controllers.Account.askMerge
-POST          /accounts/merge                        controllers.Account.doMerge
+GET           /accounts/password/change              @controllers.Account.changePassword
+POST          /accounts/password/change              @controllers.Account.doChangePassword
+GET           /accounts/verify                       @controllers.Account.verifyEmail
+GET           /accounts/add                          @controllers.Account.link
+GET           /accounts/link                         @controllers.Account.askLink
+POST          /accounts/link                         @controllers.Account.doLink
+GET           /accounts/merge                        @controllers.Account.askMerge
+POST          /accounts/merge                        @controllers.Account.doMerge
 
-GET           /login                                 controllers.Application.login
-GET           /login/password/forgot                 controllers.Signup.forgotPassword(email: String ?= "")
-POST          /login/password/forgot                 controllers.Signup.doForgotPassword
-GET           /logout                                controllers.Application.logout
-GET           /signup                                controllers.Application.signup
-POST          /signup                                controllers.Application.doSignup
-GET           /auth/:provider                        controllers.Application.authenticate(provider: String)
-GET           /auth/:provider/denied                 controllers.Application.oAuthDenied(provider: String)
+GET           /login                                 @controllers.Application.login
+GET           /login/password/forgot                 @controllers.Signup.forgotPassword(email: String ?= "")
+POST          /login/password/forgot                 @controllers.Signup.doForgotPassword
+GET           /logout                                @controllers.Application.logout
+GET           /signup                                @controllers.Application.signup
+POST          /signup                                @controllers.Application.doSignup
+GET           /auth/:provider                        @controllers.Application.authenticate(provider: String)
+GET           /auth/:provider/denied                 @controllers.Application.oAuthDenied(provider: String)
