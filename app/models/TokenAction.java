@@ -90,7 +90,7 @@ public class TokenAction extends Index {
 		Map<String, Object> map = new HashMap<>();
 		map.put(USER, user);
 		map.put(TOKEN, token);
-		map.put(TOKEN_TYPE, tokenType);
+		map.put(TOKEN_TYPE, tokenType.toString());
 		map.put(CREATED, created.toString());
 		map.put(EXPIRES, expires.toString());
 		return map;
@@ -100,7 +100,7 @@ public class TokenAction extends Index {
 	public Indexable fromIndex(Map map) {
 		user = (String) map.get(USER);
 		token = (String) map.get(TOKEN);
-		tokenType = (TokenType) map.get(TOKEN_TYPE);
+		tokenType = TokenType.valueOf((String) map.get(TOKEN_TYPE));
 		created = LocalDateTime.parse((String) map.get(CREATED));
 		expires = LocalDateTime.parse((String) map.get(EXPIRES));
 		return this;

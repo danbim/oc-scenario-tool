@@ -34,6 +34,12 @@
 				} else {
 					<li><a href="@routes.Application.login()">Login</a></li>
 				}
+
+				@if(request().path().equals(routes.Application.signup().url)) {
+					<li class="active"><a href="@routes.Application.signup()">Sign up</a></li>
+				} else {
+					<li><a href="@routes.Application.signup()">Sign up</a></li>
+				}
 			}
 		</ul>
 

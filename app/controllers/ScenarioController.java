@@ -24,8 +24,6 @@ public class ScenarioController extends Controller {
 
 	public Result list() {
 
-		// TODO work async
-
 		List<Scenario> scenarios;
 
 		if (request().queryString().containsKey("q") && !"".equals(request().getQueryString("q"))) {
@@ -65,8 +63,6 @@ public class ScenarioController extends Controller {
 
 	public Result get(String id) {
 
-		// TODO work async
-
 		Optional<Scenario> found = Optional.ofNullable(finder().byId(String.valueOf(id)));
 
 		if (!found.isPresent()) {
@@ -79,8 +75,6 @@ public class ScenarioController extends Controller {
 	}
 
 	public Result create() {
-
-		// TODO work async
 
 		Form<Scenario> form = new Form<>(Scenario.class);
 		Scenario scenario = form.bindFromRequest().get();

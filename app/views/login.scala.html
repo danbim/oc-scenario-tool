@@ -1,32 +1,47 @@
-@()
+@import auth.MyUsernamePasswordAuthProvider
+@import dto.EmailPasswordLogin
+@(loginForm: Form[EmailPasswordLogin])
 
-@main("OrganiCity Scenarios") {
+	@import helper._
+	@implicitFieldConstructor = @{
+		FieldConstructor(twitterBootstrapBasic.f)
+	}
 
-	<div class="row">
-		<div class="col-md-12">
-			Sign in using...
-			<ul>
-			@com.feth.play.module.pa.views.html.forProviders() { p =>
-				<li><a href="@p.getUrl()">@p.getKey()</a></li>
+	@main("OrganiCity Scenarios") {
+
+		<div class="row">
+			<div class="col-md-12">
+				Sign in using...
+				@_providerPartial(false)
+			</div>
+		</div>
+
+		@helper.form(routes.Application.doLogin, 'class -> "form-horizontal", 'role -> "form") {
+
+			@if(loginForm.hasGlobalErrors) {
+				<p class="alert alert-danger">
+				@loginForm.globalError
+				</p>
 			}
-			</ul>
-		</div>
-	</div>
 
-	<div class="row">
-		<div class="col-md-12">
-			<form method="post" action="@controllers.routes.Application.login()">
-				<input type="text" name="username" id="input_username" />
-				<input type="password" name="password" id="input_password"/>
-				<input type="submit" value="Login" />
-			</form>
-		</div>
-	</div>
+			@inputText(
+				loginForm("email"),
+				'_showConstraints -> false,
+				'_label -> Messages("playauthenticate.login.email.placeholder")
+			)
 
-	<div class="row">
-		<div class="col-md-12">
-			TODO Sign up using username / password
-		</div>
-	</div>
+			@inputPassword(
+				loginForm("password"),
+				'_label -> Messages("playauthenticate.login.password.placeholder")
+			)
 
-}
+			<button type="submit" class="btn btn-default">@Messages("playauthenticate.login.now")</button>
+		}
+
+		<div class="row">
+			<div class="col-md-12">
+				Or <a href="@controllers.routes.Application.signup()">sign up</a>
+			</div>
+		</div>
+
+	}

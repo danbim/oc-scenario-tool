@@ -2,6 +2,7 @@ package models;
 
 import com.github.cleverage.elasticsearch.Index;
 import com.github.cleverage.elasticsearch.IndexQuery;
+import exceptions.EntityExistsException;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import java.util.List;
@@ -18,9 +19,7 @@ public abstract class Helpers {
 		}
 
 		if (found.size() > 1) {
-			throw new IllegalStateException(
-					"More than one " + clazz.getSimpleName() + " found. This should not be possible."
-			);
+			throw new EntityExistsException(clazz);
 		}
 
 		return found.stream().findFirst();

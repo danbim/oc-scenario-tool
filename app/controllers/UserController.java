@@ -25,97 +25,97 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 @Restrict(@Group("admin"))
 public class UserController extends Controller {
 
-    public Result list() {
+	public Result list() {
 
-        List<User> users;
+		List<User> users;
 
-        String q = request().getQueryString("q");
-        if (q != null && !"".equals(q)) {
+		String q = request().getQueryString("q");
+		if (q != null && !"".equals(q)) {
 
-            // user provided a query string, search for it in all fields
-            IndexQuery<User> query = new IndexQuery<>(User.class);
-            query.setBuilder(multiMatchQuery(q, User.NAME)).from(0).size(Integer.MAX_VALUE);
+			// user provided a query string, search for it in all fields
+			IndexQuery<User> query = new IndexQuery<>(User.class);
+			query.setBuilder(multiMatchQuery(q, User.NAME)).from(0).size(Integer.MAX_VALUE);
 
-            IndexResults<User> search = finder().search(query);
+			IndexResults<User> search = finder().search(query);
 
-            if (search.totalCount == 0) {
-                users = newArrayList();
-            } else {
-                users = search.results;
-            }
+			if (search.totalCount == 0) {
+				users = newArrayList();
+			} else {
+				users = search.results;
+			}
 
-        } else {
-            users = finder().all().results;
-        }
+		} else {
+			users = finder().all().results;
+		}
 
-        if (request().accepts("text/html")) {
-            return ok(user_list.render(users));
-        }
+		if (request().accepts("text/html")) {
+			return ok(user_list.render(users));
+		}
 
-        return ok(Json.toJson(users));
-    }
+		return ok(Json.toJson(users));
+	}
 
-    public Result setRoles(String userId) {
+	public Result setRoles(String userId) {
 
-        User user = finder().byId(userId);
-        if (user == null) {
-            return notFound();
-        }
+		User user = finder().byId(userId);
+		if (user == null) {
+			return notFound();
+		}
 
-        Splitter splitter = Splitter.on(",").omitEmptyStrings().trimResults();
-        DynamicForm form = new DynamicForm().bindFromRequest();
+		Splitter splitter = Splitter.on(",").omitEmptyStrings().trimResults();
+		DynamicForm form = new DynamicForm().bindFromRequest();
 
-        user.roles = splitter
-                .splitToList(form.get("roles"))
-                .stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toList());
+		user.roles = splitter
+				.splitToList(form.get("roles"))
+				.stream()
+				.map(String::toLowerCase)
+				.collect(Collectors.toList());
 
-        user.index();
+		user.index();
 
-        return ok(Json.toJson(user));
-    }
+		return ok(Json.toJson(user));
+	}
 
-    public Result get(String id) {
-        User user = finder().byId(id);
-        if (user == null) {
-            return notFound();
-        }
-        return ok(Json.toJson(user));
-    }
+	public Result get(String id) {
+		User user = finder().byId(id);
+		if (user == null) {
+			return notFound();
+		}
+		return ok(Json.toJson(user));
+	}
 
-    public Result create() {
-        Form<User> form = new Form<>(User.class);
-        User user = form.bindFromRequest().get();
-        IndexResponse indexResponse = user.index();
-        if (indexResponse.isCreated()) {
-            user.id = indexResponse.getId();
-            response().setHeader("Location", controllers.routes.UserController.get(user.id).url());
-            return created();
-        }
-        return internalServerError();
-    }
+	public Result create() {
+		Form<User> form = new Form<>(User.class);
+		User user = form.bindFromRequest().get();
+		IndexResponse indexResponse = user.index();
+		if (indexResponse.isCreated()) {
+			user.id = indexResponse.getId();
+			response().setHeader("Location", controllers.routes.UserController.get(user.id).url());
+			return created();
+		}
+		return internalServerError();
+	}
 
-    private Index.Finder<User> finder() {
-        return new Index.Finder<>(User.class);
-    }
+	public Result delete(String id) {
 
-    public Result delete(String id) {
+		User user = finder().byId(id);
 
-        User user = finder().byId(id);
+		if (user == null) {
 
-        if (user == null) {
+			return notFound();
 
-            return notFound();
+		} else {
 
-        } else {
+			DeleteResponse response = user.delete();
+			if (response.isFound()) {
+				return noContent();
+			} else {
+				return internalServerError();
+			}
+		}
+	}
 
-            DeleteResponse response = user.delete();
-            if (response.isFound()) {
-                return noContent();
-            } else {
-                return internalServerError();
-            }
-        }
-    }
+	private Index.Finder<User> finder() {
+		return new Index.Finder<>(User.class);
+	}
 }

@@ -81,6 +81,9 @@ public class User extends Index {
 	}
 
 	public static Optional<User> findByAuthUserIdentity(AuthUserIdentity identity) {
+		if (identity == null) {
+			return Optional.empty();
+		}
 		return findSingle(User.class, matchQuery(User.AUTH_ID, identity.getId()));
 	}
 

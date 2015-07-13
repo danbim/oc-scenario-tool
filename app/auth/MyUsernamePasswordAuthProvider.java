@@ -6,6 +6,8 @@ import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthUser;
 import com.google.inject.Inject;
 import controllers.routes;
+import dto.EmailPasswordLogin;
+import dto.EmailPasswordSignUp;
 import models.TokenAction;
 import models.TokenAction.TokenType;
 import models.User;
@@ -13,9 +15,6 @@ import models.UserLinkedAccount;
 import play.Application;
 import play.Logger;
 import play.data.Form;
-import play.data.validation.Constraints.Email;
-import play.data.validation.Constraints.MinLength;
-import play.data.validation.Constraints.Required;
 import play.i18n.Lang;
 import play.i18n.Messages;
 import play.mvc.Call;
@@ -34,11 +33,11 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 		String,
 		MyLoginUsernamePasswordAuthUser,
 		MyUsernamePasswordAuthUser,
-		MyUsernamePasswordAuthProvider.MyLogin,
-		MyUsernamePasswordAuthProvider.MySignup> {
+		EmailPasswordLogin,
+		EmailPasswordSignUp> {
 
-	public static final Form<MySignup> SIGNUP_FORM = form(MySignup.class);
-	public static final Form<MyLogin> LOGIN_FORM = form(MyLogin.class);
+	public static final Form<EmailPasswordSignUp> SIGNUP_FORM = form(EmailPasswordSignUp.class);
+	public static final Form<EmailPasswordLogin> LOGIN_FORM = form(EmailPasswordLogin.class);
 
 	private static final String SETTING_KEY_VERIFICATION_LINK_SECURE = SETTING_KEY_MAIL + "." + "verificationLink.secure";
 	private static final String SETTING_KEY_PASSWORD_RESET_LINK_SECURE = SETTING_KEY_MAIL + "." + "passwordResetLink.secure";
@@ -67,11 +66,11 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 		return needed;
 	}
 
-	protected Form<MySignup> getSignupForm() {
+	protected Form<EmailPasswordSignUp> getSignupForm() {
 		return SIGNUP_FORM;
 	}
 
-	protected Form<MyLogin> getLoginForm() {
+	protected Form<EmailPasswordLogin> getLoginForm() {
 		return LOGIN_FORM;
 	}
 
@@ -89,8 +88,7 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 			}
 		}
 		// The user either does not exist or is inactive - create a new one
-		@SuppressWarnings("unused")
-		final User newUser = User.create(user);
+		User.create(user);
 		// Usually the email should be verified before allowing login, however
 		// if you return
 		// return SignupResult.USER_CREATED;
@@ -137,16 +135,13 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 	}
 
 	@Override
-	protected MyUsernamePasswordAuthUser buildSignupAuthUser(
-			final MySignup signup, final Context ctx) {
+	protected MyUsernamePasswordAuthUser buildSignupAuthUser(final EmailPasswordSignUp signup, final Context ctx) {
 		return new MyUsernamePasswordAuthUser(signup);
 	}
 
 	@Override
-	protected MyLoginUsernamePasswordAuthUser buildLoginAuthUser(
-			final MyLogin login, final Context ctx) {
-		return new MyLoginUsernamePasswordAuthUser(login.getPassword(),
-				login.getEmail());
+	protected MyLoginUsernamePasswordAuthUser buildLoginAuthUser(final EmailPasswordLogin login, final Context ctx) {
+		return new MyLoginUsernamePasswordAuthUser(login.getPassword(), login.getEmail());
 	}
 
 	@Override
@@ -155,16 +150,16 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 	}
 
 	@Override
-	protected String getVerifyEmailMailingSubject(
-			final MyUsernamePasswordAuthUser user, final Context ctx) {
+	protected String getVerifyEmailMailingSubject(final MyUsernamePasswordAuthUser user, final Context ctx) {
 		return Messages.get("playauthenticate.password.verify_signup.subject");
 	}
 
 	@Override
 	protected String onLoginUserNotFound(final Context context) {
-		context.flash()
-				.put(controllers.Application.FLASH_ERROR_KEY,
-						Messages.get("playauthenticate.password.login.unknown_user_or_pw"));
+		context.flash().put(
+				controllers.Application.FLASH_ERROR_KEY,
+				Messages.get("playauthenticate.password.login.unknown_user_or_pw")
+		);
 		return super.onLoginUserNotFound(context);
 	}
 
@@ -172,20 +167,13 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 	protected Body getVerifyEmailMailingBody(final String token,
 											 final MyUsernamePasswordAuthUser user, final Context ctx) {
 
-		final boolean isSecure = getConfiguration().getBoolean(
-				SETTING_KEY_VERIFICATION_LINK_SECURE);
-		final String url = routes.Signup.verify(token).absoluteURL(
-				ctx.request(), isSecure);
+		boolean isSecure = getConfiguration().getBoolean(SETTING_KEY_VERIFICATION_LINK_SECURE);
+		String url = routes.Signup.verify(token).absoluteURL(ctx.request(), isSecure);
 
-		final Lang lang = Lang.preferred(ctx.request().acceptLanguages());
-		final String langCode = lang.code();
+		Lang lang = Lang.preferred(ctx.request().acceptLanguages());
 
-		final String html = getEmailTemplate(
-				"views.html.account.signup.email.verify_email", langCode, url,
-				token, user.getName(), user.getEmail());
-		final String text = getEmailTemplate(
-				"views.txt.account.signup.email.verify_email", langCode, url,
-				token, user.getName(), user.getEmail());
+		String html = getEmailTemplate("views.html.account.signup.email.verify_email", lang.code(), url, token, user.getName(), user.getEmail());
+		String text = getEmailTemplate("views.txt.account.signup.email.verify_email", lang.code(), url, token, user.getName(), user.getEmail());
 
 		return new Body(text, html);
 	}
@@ -196,58 +184,39 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 	}
 
 	protected String generateVerificationRecord(final User user) {
-		final String token = generateToken();
-		// Do database actions, etc.
+		String token = generateToken();
 		TokenAction.create(TokenType.EMAIL_VERIFICATION, token, user);
 		return token;
 	}
 
 	protected String generatePasswordResetRecord(final User u) {
-		final String token = generateToken();
+		String token = generateToken();
 		TokenAction.create(TokenType.PASSWORD_RESET, token, u);
 		return token;
 	}
 
-	protected String getPasswordResetMailingSubject(final User user,
-													final Context ctx) {
-		return Messages.get("playauthenticate.password.reset_email.subject");
-	}
+	protected Body getPasswordResetMailingBody(final String token, final User user, final Context ctx) {
 
-	protected Body getPasswordResetMailingBody(final String token,
-											   final User user, final Context ctx) {
+		boolean isSecure = getConfiguration().getBoolean(SETTING_KEY_PASSWORD_RESET_LINK_SECURE);
+		String url = routes.Signup.resetPassword(token).absoluteURL(ctx.request(), isSecure);
 
-		final boolean isSecure = getConfiguration().getBoolean(
-				SETTING_KEY_PASSWORD_RESET_LINK_SECURE);
-		final String url = routes.Signup.resetPassword(token).absoluteURL(
-				ctx.request(), isSecure);
+		Lang lang = Lang.preferred(ctx.request().acceptLanguages());
 
-		final Lang lang = Lang.preferred(ctx.request().acceptLanguages());
-		final String langCode = lang.code();
-
-		final String html = getEmailTemplate(
-				"views.html.account.email.password_reset", langCode, url,
-				token, user.name, user.email);
-		final String text = getEmailTemplate(
-				"views.txt.account.email.password_reset", langCode, url, token,
-				user.name, user.email);
+		String html = getEmailTemplate("views.html.account.email.password_reset", lang.code(), url, token, user.name, user.email);
+		String text = getEmailTemplate("views.txt.account.email.password_reset", lang.code(), url, token, user.name, user.email);
 
 		return new Body(text, html);
 	}
 
 	public void sendPasswordResetMailing(final User user, final Context ctx) {
 		final String token = generatePasswordResetRecord(user);
-		final String subject = getPasswordResetMailingSubject(user, ctx);
+		final String subject = Messages.get("playauthenticate.password.reset_email.subject");
 		final Body body = getPasswordResetMailingBody(token, user, ctx);
 		sendMail(subject, body, getEmailName(user));
 	}
 
 	public boolean isLoginAfterPasswordReset() {
 		return getConfiguration().getBoolean(SETTING_KEY_LINK_LOGIN_AFTER_PASSWORD_RESET);
-	}
-
-	protected String getVerifyEmailMailingSubjectAfterSignup(final User user,
-															 final Context ctx) {
-		return Messages.get("playauthenticate.password.verify_email.subject");
 	}
 
 	protected String getEmailTemplate(final String template,
@@ -275,13 +244,10 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 			}
 		}
 		if (cls != null) {
-			Method htmlRender = null;
+			Method htmlRender;
 			try {
-				htmlRender = cls.getMethod("render", String.class,
-						String.class, String.class, String.class);
-				ret = htmlRender.invoke(null, url, token, name, email)
-						.toString();
-
+				htmlRender = cls.getMethod("render", String.class, String.class, String.class, String.class);
+				ret = htmlRender.invoke(null, url, token, name, email).toString();
 			} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
@@ -289,34 +255,24 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 		return ret;
 	}
 
-	protected Body getVerifyEmailMailingBodyAfterSignup(final String token,
-														final User user, final Context ctx) {
+	protected Body getVerifyEmailMailingBodyAfterSignup(final String token, final User user, final Context ctx) {
 
-		final boolean isSecure = getConfiguration().getBoolean(
-				SETTING_KEY_VERIFICATION_LINK_SECURE);
-		final String url = routes.Signup.verify(token).absoluteURL(
-				ctx.request(), isSecure);
+		boolean isSecure = getConfiguration().getBoolean(SETTING_KEY_VERIFICATION_LINK_SECURE);
+		String url = routes.Signup.verify(token).absoluteURL(ctx.request(), isSecure);
 
-		final Lang lang = Lang.preferred(ctx.request().acceptLanguages());
-		final String langCode = lang.code();
+		Lang lang = Lang.preferred(ctx.request().acceptLanguages());
+		String langCode = lang.code();
 
-		final String html = getEmailTemplate(
-				"views.html.account.email.verify_email", langCode, url, token,
-				user.name, user.email);
-		final String text = getEmailTemplate(
-				"views.txt.account.email.verify_email", langCode, url, token,
-				user.name, user.email);
+		String html = getEmailTemplate("views.html.account.email.verify_email", langCode, url, token, user.name, user.email);
+		String text = getEmailTemplate("views.txt.account.email.verify_email", langCode, url, token, user.name, user.email);
 
 		return new Body(text, html);
 	}
 
-	public void sendVerifyEmailMailingAfterSignup(final User user,
-												  final Context ctx) {
-
-		final String subject = getVerifyEmailMailingSubjectAfterSignup(user,
-				ctx);
-		final String token = generateVerificationRecord(user);
-		final Body body = getVerifyEmailMailingBodyAfterSignup(token, user, ctx);
+	public void sendVerifyEmailMailingAfterSignup(final User user, final Context ctx) {
+		String subject = Messages.get("playauthenticate.password.verify_email.subject");
+		String token = generateVerificationRecord(user);
+		Body body = getVerifyEmailMailingBodyAfterSignup(token, user, ctx);
 		sendMail(subject, body, getEmailName(user));
 	}
 
@@ -324,55 +280,4 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 		return getEmailName(user.email, user.name);
 	}
 
-	public static class MyIdentity {
-
-		@Required
-		@Email
-		public String email;
-
-		public MyIdentity() {
-		}
-
-		public MyIdentity(final String email) {
-			this.email = email;
-		}
-
-	}
-
-	public static class MyLogin extends MyIdentity
-			implements
-			com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider.UsernamePassword {
-
-		@Required
-		@MinLength(5)
-		public String password;
-
-		@Override
-		public String getEmail() {
-			return email;
-		}
-
-		@Override
-		public String getPassword() {
-			return password;
-		}
-	}
-
-	public static class MySignup extends MyLogin {
-
-		@Required
-		@MinLength(5)
-		public String repeatPassword;
-
-		@Required
-		public String name;
-
-		public String validate() {
-			if (password == null || !password.equals(repeatPassword)) {
-				return Messages
-						.get("playauthenticate.password.signup.error.passwords_not_same");
-			}
-			return null;
-		}
-	}
 }

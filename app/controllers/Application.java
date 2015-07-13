@@ -1,13 +1,16 @@
 package controllers;
 
-import auth.MyUsernamePasswordAuthProvider;
 import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.controllers.Authenticate;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
+import dto.EmailPasswordLogin;
+import dto.EmailPasswordSignUp;
+import exceptions.EntityExistsException;
 import models.User;
 import play.data.Form;
+import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -17,6 +20,9 @@ import views.html.profile;
 import views.html.signup;
 
 import java.util.Optional;
+
+import static auth.MyUsernamePasswordAuthProvider.LOGIN_FORM;
+import static auth.MyUsernamePasswordAuthProvider.SIGNUP_FORM;
 
 public class Application extends Controller {
 
@@ -37,7 +43,16 @@ public class Application extends Controller {
 	}
 
 	public Result login() {
-		return ok(login.render());
+		return ok(login.render(LOGIN_FORM));
+	}
+
+	public Result doLogin() {
+		Authenticate.noCache(response());
+		Form<EmailPasswordLogin> form = LOGIN_FORM.bindFromRequest();
+		if (form.hasErrors()) {
+			return badRequest(login.render(form));
+		}
+		return UsernamePasswordAuthProvider.handleLogin(ctx());
 	}
 
 	public Result logout() {
@@ -45,7 +60,7 @@ public class Application extends Controller {
 	}
 
 	public Result signup() {
-		return ok(signup.render(MyUsernamePasswordAuthProvider.SIGNUP_FORM));
+		return ok(signup.render(SIGNUP_FORM));
 	}
 
 	public Result authenticate(String provider) {
@@ -54,16 +69,19 @@ public class Application extends Controller {
 
 	public Result doSignup() {
 		Authenticate.noCache(response());
-		Form<MyUsernamePasswordAuthProvider.MySignup> filledForm =
-				MyUsernamePasswordAuthProvider.SIGNUP_FORM.bindFromRequest();
+		Form<EmailPasswordSignUp> filledForm = SIGNUP_FORM.bindFromRequest();
 		if (filledForm.hasErrors()) {
 			// User did not fill everything properly
 			return badRequest(signup.render(filledForm));
 		} else {
-			// Everything was filled
-			// do something with your part of the form before handling the user
-			// signup
-			return UsernamePasswordAuthProvider.handleSignup(ctx());
+			// Everything was filled, do something with your part of the form before handling the user signup
+			try {
+				return UsernamePasswordAuthProvider.handleSignup(ctx());
+			} catch (EntityExistsException e) {
+				// user already exists
+				filledForm.reject(Messages.get("playauthenticate.user.exists.message"));
+				return badRequest(signup.render(filledForm));
+			}
 		}
 	}
 

@@ -1,5 +1,6 @@
 @import auth.MyUsernamePasswordAuthProvider
-@(signupForm: Form[MyUsernamePasswordAuthProvider.MySignup])
+@import dto.EmailPasswordSignUp
+@(signupForm: Form[EmailPasswordSignUp])
 
 @import helper._
 @implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapBasic.f) }
@@ -24,10 +25,7 @@
 					</p>
 				}
 
-				@inputText(
-					signupForm("name"),
-					'_label -> Messages("playauthenticate.signup.name")
-				)
+				@inputText(signupForm("name"), '_label -> Messages("playauthenticate.signup.name"))
 
 				@_emailPartial(signupForm, false)
 

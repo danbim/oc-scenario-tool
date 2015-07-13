@@ -30,6 +30,8 @@ GET           /accounts/verify/:token                @controllers.Signup.verify(
 GET           /accounts/exists                       @controllers.Signup.exists
 GET           /accounts/password/reset/:token        @controllers.Signup.resetPassword(token: String)
 POST          /accounts/password/reset               @controllers.Signup.doResetPassword
+GET           /accounts/password/forgot              @controllers.Signup.forgotPassword(email: String ?= "")
+POST          /accounts/password/forgot              @controllers.Signup.doForgotPassword
 
 GET           /accounts/password/change              @controllers.Account.changePassword
 POST          /accounts/password/change              @controllers.Account.doChangePassword
@@ -41,10 +43,9 @@ GET           /accounts/merge                        @controllers.Account.askMer
 POST          /accounts/merge                        @controllers.Account.doMerge
 
 GET           /login                                 @controllers.Application.login
-GET           /login/password/forgot                 @controllers.Signup.forgotPassword(email: String ?= "")
-POST          /login/password/forgot                 @controllers.Signup.doForgotPassword
-GET           /logout                                @controllers.Application.logout
+POST          /login                                 @controllers.Application.doLogin
 GET           /signup                                @controllers.Application.signup
 POST          /signup                                @controllers.Application.doSignup
+GET           /logout                                @controllers.Application.logout
 GET           /auth/:provider                        @controllers.Application.authenticate(provider: String)
 GET           /auth/:provider/denied                 @controllers.Application.oAuthDenied(provider: String)
