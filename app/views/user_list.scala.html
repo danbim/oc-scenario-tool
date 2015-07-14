@@ -2,14 +2,6 @@
 
 @import com.google.common.base.Joiner
 
-@roleString(user: User) = @{
-    if(user.roles != null) {
-        Joiner.on(",").join(user.roles)
-    } else {
-        ""
-    }
-}
-
 @main("OrganiCity Scenarios") {
 
     @user_search_form(true)
@@ -39,19 +31,18 @@
                 } else {
                     @users.map { user =>
                         <tr>
-                            <td>@user.id</td>
                             <td>@user.name</td>
                             <td>@user.email</td>
                             <td>
-                                <form action="@routes.UserController.setRoles(user.id)" method="post">
-                                    <input type="text" name="roles" value="@roleString(user)"/>
+                                <form action="@routes.Users.setRoles(user.email)" method="post">
+                                    <input type="text" name="roles" value="@user.roles"/>
                                     <button type="submit">Update</button>
                                 </form>
                             </td>
                             <td>@user.auth_provider</td>
                             <td>@user.auth_id</td>
                             <td>
-                                <button type="button" class="btn btn-danger" onclick="deleteUser('@controllers.routes.UserController.delete(user.id)')">
+                                <button type="button" class="btn btn-danger" onclick="deleteUser('@controllers.routes.Users.delete(user.email)')">
                                     Delete</button>
                             </td>
                         </tr>

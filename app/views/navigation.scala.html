@@ -7,17 +7,17 @@
 
 		<ul class="nav navbar-nav">
 
-			@if(request().path().equals(routes.ScenarioController.list().url)) {
-				<li class="active"><a href="@routes.ScenarioController.list()">Scenarios</a></li>
+			@if(request().path().equals(routes.Scenarios.list().url)) {
+				<li class="active"><a href="@routes.Scenarios.list()">Scenarios</a></li>
 			} else {
-				<li><a href="@routes.ScenarioController.list()">Scenarios</a></li>
+				<li><a href="@routes.Scenarios.list()">Scenarios</a></li>
 			}
 
 			@restrict(roles = la(as("admin"))) {
-				@if(request().path().equals(routes.UserController.list().url)) {
-					<li class="active"><a href="@routes.UserController.list()">Users</a></li>
+				@if(request().path().equals(routes.Users.list().url)) {
+					<li class="active"><a href="@routes.Users.list()">Users</a></li>
 				} else {
-					<li><a href="@routes.UserController.list()">Users</a></li>
+					<li><a href="@routes.Users.list()">Users</a></li>
 				}
 			}
 

@@ -1,50 +1,50 @@
-@(scenarios: List[models.Scenario], users: List[User])
+@(scenarios: List[models.Scenario])
 
-    @import be.objectify.deadbolt.java.views.html.subjectPresentOr
+	@import be.objectify.deadbolt.java.views.html.subjectPresentOr
 
-    @main("OrganiCity Scenarios") {
+	@main("OrganiCity Scenarios") {
 
-        @scenario_search_form(true)
+		@scenario_search_form(true)
 
-        <div class="row">
-            <div class="col-md-12">
-                    &nbsp;
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <table class="table table-striped table-bordered table-condensed">
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Summary</th>
-                        <th>Creator</th>
-                    </tr>
-                    @if(scenarios.isEmpty()) {
-                        <tr>
-                            <td colspan="4">No scenarios found...</td>
-                        </tr>
-                    } else {
-                        @scenarios.map { scenario =>
-                            <tr>
-                                <td><a href="@controllers.routes.ScenarioController.get(scenario.id)">@scenario.id</a></td>
-                                <td><a href="@controllers.routes.ScenarioController.get(scenario.id)">@scenario.title</a></td>
-                                <td>@scenario.summary</td>
-                                <td>@scenario.creator.name</td>
-                            </tr>
-                        }
-                    }
-                </table>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <h4>New Scenario</h4>
-                @subjectPresentOr() {
-                    @scenario_form(Option.empty, users)
-                } {
-                    You need to <a href="@routes.Application.login()">log in</a> to create a new scenario!
-                }
-            </div>
-        </div>
-    }
+		<div class="row">
+			<div class="col-md-12">
+					&nbsp;
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<table class="table table-striped table-bordered table-condensed">
+					<tr>
+						<th>ID</th>
+						<th>Title</th>
+						<th>Summary</th>
+						<th>Creator</th>
+					</tr>
+					@if(scenarios.isEmpty()) {
+						<tr>
+							<td colspan="4">No scenarios found...</td>
+						</tr>
+					} else {
+						@scenarios.map { scenario =>
+							<tr>
+								<td><a href="@controllers.routes.Scenarios.get(scenario.id)">@scenario.id</a></td>
+								<td><a href="@controllers.routes.Scenarios.get(scenario.id)">@scenario.title</a></td>
+								<td>@scenario.summary</td>
+								<td>@scenario.creator</td>
+							</tr>
+						}
+					}
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				<h4>New Scenario</h4>
+				@subjectPresentOr() {
+					@scenario_form(Option.empty)
+				} {
+					You need to <a href="@routes.Application.login()">log in</a> to create a new scenario!
+				}
+			</div>
+		</div>
+	}

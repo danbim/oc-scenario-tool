@@ -4,7 +4,6 @@ import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.PlayAuthenticate.Resolver;
 import com.feth.play.module.pa.exceptions.AccessDeniedException;
 import com.feth.play.module.pa.exceptions.AuthException;
-import com.github.cleverage.elasticsearch.Index;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import controllers.routes;
@@ -48,13 +47,13 @@ public class Global extends GlobalSettings {
 
 		Formatters.register(User.class, new Formatters.SimpleFormatter<User>() {
 			@Override
-			public User parse(String s, Locale locale) throws ParseException {
-				return new Index.Finder<>(User.class).byId(s);
+			public User parse(String email, Locale locale) throws ParseException {
+				return User.find.byId(email);
 			}
 
 			@Override
 			public String print(User user, Locale locale) {
-				return user.id;
+				return user.email;
 			}
 		});
 

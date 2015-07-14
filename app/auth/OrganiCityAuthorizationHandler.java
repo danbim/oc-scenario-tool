@@ -31,11 +31,11 @@ public class OrganiCityAuthorizationHandler extends AbstractDeadboltHandler {
 		if (user == null) {
 			return Promise.pure(Optional.empty());
 		}
-		Optional<User> localUser = User.findByAuthUserIdentity(user);
-		if (!localUser.isPresent()) {
+		User localUser = User.find.byId(user.getId());
+		if (localUser == null) {
 			return Promise.pure(Optional.empty());
 		}
-		return Promise.pure(Optional.of(new LocalSubject(localUser.get())));
+		return Promise.pure(Optional.of(new LocalSubject(localUser)));
 	}
 
 	public static class LocalRole implements Role {
@@ -54,9 +54,9 @@ public class OrganiCityAuthorizationHandler extends AbstractDeadboltHandler {
 
 	public static class LocalSubject implements Subject {
 
-		private final User user;
+		private final models.User user;
 
-		public LocalSubject(User user) {
+		public LocalSubject(models.User user) {
 			this.user = user;
 		}
 
@@ -65,7 +65,8 @@ public class OrganiCityAuthorizationHandler extends AbstractDeadboltHandler {
 			if (user.roles == null) {
 				return new ArrayList<>();
 			}
-			return user.roles.stream()
+			return user.getRoleList()
+					.stream()
 					.map(LocalRole::new)
 					.collect(Collectors.toList());
 		}
@@ -77,7 +78,7 @@ public class OrganiCityAuthorizationHandler extends AbstractDeadboltHandler {
 
 		@Override
 		public String getIdentifier() {
-			return user.id;
+			return user.email;
 		}
 	}
 }

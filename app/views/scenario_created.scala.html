@@ -1,0 +1,11 @@
+@(scenario: models.Scenario)
+
+@main("OrganiCity Scenarios") {
+
+	<div class="row">
+		<div class="col-md-12">
+				Scenario <a href="@routes.Scenarios.get(scenario.id)">@scenario.title</a> was successfully created.
+		</div>
+	</div>
+
+}

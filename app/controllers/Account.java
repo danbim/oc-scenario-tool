@@ -8,11 +8,10 @@ import be.objectify.deadbolt.java.actions.SubjectPresent;
 import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.controllers.Authenticate;
 import com.feth.play.module.pa.user.AuthUser;
+import dto.Accept;
+import dto.PasswordChange;
 import models.User;
 import play.data.Form;
-import play.data.format.Formats.NonEmpty;
-import play.data.validation.Constraints.MinLength;
-import play.data.validation.Constraints.Required;
 import play.i18n.Messages;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -25,7 +24,7 @@ import static play.data.Form.form;
 public class Account extends Controller {
 
 	private static final Form<Accept> ACCEPT_FORM = form(Accept.class);
-	private static final Form<Account.PasswordChange> PASSWORD_CHANGE_FORM = form(Account.PasswordChange.class);
+	private static final Form<PasswordChange> PASSWORD_CHANGE_FORM = form(PasswordChange.class);
 
 	private final Application application;
 
@@ -46,18 +45,23 @@ public class Account extends Controller {
 		final User user = application.getLocalUser(session()).get();
 		if (user.emailValidated) {
 			// E-Mail has been validated already
-			flash(Application.FLASH_MESSAGE_KEY, Messages.get("playauthenticate.verify_email.error.already_validated"));
+			flash(
+					Application.FLASH_MESSAGE_KEY,
+					Messages.get("playauthenticate.verify_email.error.already_validated")
+			);
 		} else if (user.email != null && !user.email.trim().isEmpty()) {
-			flash(Application.FLASH_MESSAGE_KEY, Messages.get(
-					"playauthenticate.verify_email.message.instructions_sent",
-					user.email));
+			flash(
+					Application.FLASH_MESSAGE_KEY,
+					Messages.get("playauthenticate.verify_email.message.instructions_sent", user.email)
+			);
 			MyUsernamePasswordAuthProvider.getProvider().sendVerifyEmailMailingAfterSignup(user, ctx());
 		} else {
-			flash(Application.FLASH_MESSAGE_KEY, Messages.get(
-					"playauthenticate.verify_email.error.set_email_first",
-					user.email));
+			flash(
+					Application.FLASH_MESSAGE_KEY,
+					Messages.get("playauthenticate.verify_email.error.set_email_first", user.email)
+			);
 		}
-		return redirect(routes.Application.profile());
+		return redirect(controllers.routes.Application.profile());
 	}
 
 	@Restrict(@Group(Application.USER_ROLE))
@@ -74,7 +78,7 @@ public class Account extends Controller {
 	@Restrict(@Group(Application.USER_ROLE))
 	public Result doChangePassword() {
 		Authenticate.noCache(response());
-		final Form<Account.PasswordChange> filledForm = PASSWORD_CHANGE_FORM
+		final Form<PasswordChange> filledForm = PASSWORD_CHANGE_FORM
 				.bindFromRequest();
 		if (filledForm.hasErrors()) {
 			// User did not select whether to link or not link
@@ -86,7 +90,7 @@ public class Account extends Controller {
 					true);
 			flash(Application.FLASH_MESSAGE_KEY,
 					Messages.get("playauthenticate.change_password.success"));
-			return redirect(routes.Application.profile());
+			return redirect(controllers.routes.Application.profile());
 		}
 	}
 
@@ -96,7 +100,7 @@ public class Account extends Controller {
 		final AuthUser u = PlayAuthenticate.getLinkUser(session());
 		if (u == null) {
 			// account to link could not be found, silently redirect to login
-			return redirect(routes.Application.index());
+			return redirect(controllers.routes.Application.index());
 		}
 		return ok(ask_link.render(ACCEPT_FORM, u));
 	}
@@ -107,7 +111,7 @@ public class Account extends Controller {
 		final AuthUser u = PlayAuthenticate.getLinkUser(session());
 		if (u == null) {
 			// account to link could not be found, silently redirect to login
-			return redirect(routes.Application.index());
+			return redirect(controllers.routes.Application.index());
 		}
 
 		final Form<Accept> filledForm = ACCEPT_FORM.bindFromRequest();
@@ -135,7 +139,7 @@ public class Account extends Controller {
 		final AuthUser bUser = PlayAuthenticate.getMergeUser(session());
 		if (bUser == null) {
 			// user to merge with could not be found, silently redirect to login
-			return redirect(routes.Application.index());
+			return redirect(controllers.routes.Application.index());
 		}
 
 		// You could also get the local user object here via
@@ -153,7 +157,7 @@ public class Account extends Controller {
 		final AuthUser bUser = PlayAuthenticate.getMergeUser(session());
 		if (bUser == null) {
 			// user to merge with could not be found, silently redirect to login
-			return redirect(routes.Application.index());
+			return redirect(controllers.routes.Application.index());
 		}
 
 		final Form<Accept> filledForm = ACCEPT_FORM.bindFromRequest();
@@ -164,60 +168,12 @@ public class Account extends Controller {
 			// User made a choice :)
 			final boolean merge = filledForm.get().accept;
 			if (merge) {
-				flash(Application.FLASH_MESSAGE_KEY,
-						Messages.get("playauthenticate.accounts.merge.success"));
+				flash(
+						Application.FLASH_MESSAGE_KEY,
+						Messages.get("playauthenticate.accounts.merge.success")
+				);
 			}
 			return PlayAuthenticate.merge(ctx(), merge);
-		}
-	}
-
-	public static class Accept {
-
-		@Required
-		@NonEmpty
-		public Boolean accept;
-
-		public Boolean getAccept() {
-			return accept;
-		}
-
-		public void setAccept(Boolean accept) {
-			this.accept = accept;
-		}
-
-	}
-
-	public static class PasswordChange {
-		@MinLength(5)
-		@Required
-		public String password;
-
-		@MinLength(5)
-		@Required
-		public String repeatPassword;
-
-		public String getPassword() {
-			return password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
-		public String getRepeatPassword() {
-			return repeatPassword;
-		}
-
-		public void setRepeatPassword(String repeatPassword) {
-			this.repeatPassword = repeatPassword;
-		}
-
-		public String validate() {
-			if (password == null || !password.equals(repeatPassword)) {
-				return Messages
-						.get("playauthenticate.change_password.error.passwords_not_same");
-			}
-			return null;
 		}
 	}
 

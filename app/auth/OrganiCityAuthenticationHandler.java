@@ -1,14 +1,12 @@
 package auth;
 
+import com.feth.play.module.pa.service.UserServicePlugin;
+import com.feth.play.module.pa.user.AuthUser;
+import com.feth.play.module.pa.user.AuthUserIdentity;
 import models.User;
 import play.Application;
 
-import com.feth.play.module.pa.user.AuthUser;
-import com.feth.play.module.pa.user.AuthUserIdentity;
-import com.feth.play.module.pa.service.UserServicePlugin;
-
 import javax.inject.Inject;
-import java.util.Optional;
 
 public class OrganiCityAuthenticationHandler extends UserServicePlugin {
 
@@ -19,11 +17,10 @@ public class OrganiCityAuthenticationHandler extends UserServicePlugin {
 
 	@Override
 	public Object save(final AuthUser authUser) {
-		final boolean isLinked = User.existsByAuthUserIdentity(authUser);
-		if (!isLinked) {
-			return User.create(authUser).id;
+		User user = User.find.byId(authUser.getId());
+		if (user == null) {
+			return User.create(authUser).email;
 		} else {
-			// we have this user already, so return null
 			return null;
 		}
 	}
@@ -32,9 +29,9 @@ public class OrganiCityAuthenticationHandler extends UserServicePlugin {
 	public Object getLocalIdentity(final AuthUserIdentity identity) {
 		// For production: Caching might be a good idea here...
 		// ...and don't forget to sync the cache when users get deactivated/deleted
-		final Optional<User> u = User.findByAuthUserIdentity(identity);
-		if(u.isPresent()) {
-			return u.get().id;
+		final User u = User.find.byId(identity.getId());
+		if (u != null) {
+			return u.email;
 		} else {
 			return null;
 		}

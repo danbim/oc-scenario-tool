@@ -5,6 +5,7 @@ import be.objectify.deadbolt.java.actions.Restrict;
 import com.feth.play.module.pa.PlayAuthenticate;
 import com.feth.play.module.pa.controllers.Authenticate;
 import com.feth.play.module.pa.providers.password.UsernamePasswordAuthProvider;
+import com.feth.play.module.pa.user.AuthUser;
 import dto.EmailPasswordLogin;
 import dto.EmailPasswordSignUp;
 import exceptions.EntityExistsException;
@@ -92,7 +93,11 @@ public class Application extends Controller {
     }
 
     public Optional<User> getLocalUser(final Http.Session session) {
-        return User.findByAuthUserIdentity(PlayAuthenticate.getUser(session));
+		final AuthUser user = PlayAuthenticate.getUser(session);
+		if (user == null) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(User.find.byId(user.getId()));
     }
 
 }

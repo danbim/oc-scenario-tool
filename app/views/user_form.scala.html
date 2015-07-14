@@ -1,7 +1,7 @@
 @(user: Option[User])
 @import com.google.common.base.Joiner
 
-<form class="form-inline" action="@controllers.routes.UserController.create" method="post">
+<form class="form-inline" action="@controllers.routes.Users.create" method="post">
     <div class="form-group">
         <label for="name">Name</label>
         <input type="text" class="form-control" id="name" name="name" value="@user.map(u => u.name)">

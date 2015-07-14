@@ -1,44 +1,49 @@
 package models;
 
+import com.avaje.ebean.Model;
 import com.feth.play.module.pa.user.AuthUser;
-import com.github.cleverage.elasticsearch.Index;
-import com.github.cleverage.elasticsearch.Indexable;
-import com.github.cleverage.elasticsearch.annotations.IndexType;
 
-import java.net.URL;
+import javax.persistence.*;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 
-import static com.google.common.collect.Maps.newHashMap;
-import static models.Helpers.findSingle;
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static com.avaje.ebean.Expr.eq;
 
-@IndexType(name = "user_linked_account")
-public class UserLinkedAccount extends Index {
+@Entity
+public class UserLinkedAccount extends Model {
 
-	public static final String USER_ID = "user_id";
-	public static final String PROVIDER_KEY = "provider_key";
-	public static final String PROVIDER_USER_ID = "provider_user_id";
+	public static Find<String, UserLinkedAccount> find = new Find<String, UserLinkedAccount>() {
+	};
 
-	public String email;
-	public boolean emailIsVerified;
-	public String name;
-	public String firstName;
-	public String lastName;
-	public URL picture;
-	public String gender;
-	public Locale locale;
-	public String profile;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	public Long id;
 
-	public String userId;
+	@ManyToOne
+	public User user;
+
 	public String providerKey;
+
 	public String providerUserId;
 
-	public static UserLinkedAccount create(User user, final AuthUser authUser) {
+	public String email;
+
+	public String name;
+
+	public String firstName;
+
+	public String lastName;
+
+	public String picture;
+
+	public String gender;
+
+	public Locale locale;
+
+	public String profile;
+
+	public static UserLinkedAccount create(final AuthUser authUser) {
 		final UserLinkedAccount ret = new UserLinkedAccount();
-		ret.userId = user.id;
 		ret.providerKey = authUser.getProvider();
 		ret.providerUserId = authUser.getId();
 		return ret;
@@ -46,33 +51,17 @@ public class UserLinkedAccount extends Index {
 
 	public static UserLinkedAccount create(final UserLinkedAccount acc) {
 		final UserLinkedAccount ret = new UserLinkedAccount();
-		ret.userId = acc.userId;
+		ret.user = acc.user;
 		ret.providerKey = acc.providerKey;
 		ret.providerUserId = acc.providerUserId;
 		return ret;
 	}
 
 	public static Optional<UserLinkedAccount> findByProviderKey(final User user, String key) {
-		return findSingle(UserLinkedAccount.class, boolQuery()
-						.must(matchQuery(USER_ID, user.id))
-						.must(matchQuery(PROVIDER_KEY, key))
+		return Optional.ofNullable(
+				UserLinkedAccount.find.where().and(
+						eq("user", user), eq("providerKey", key)
+				).findUnique()
 		);
-	}
-
-	@Override
-	public Map toIndex() {
-		Map<String, Object> map = newHashMap();
-		map.put(USER_ID, userId);
-		map.put(PROVIDER_KEY, providerKey);
-		map.put(PROVIDER_USER_ID, providerUserId);
-		return map;
-	}
-
-	@Override
-	public Indexable fromIndex(Map map) {
-		this.userId = (String) map.get(USER_ID);
-		this.providerKey = (String) map.get(PROVIDER_KEY);
-		this.providerUserId = (String) map.get(PROVIDER_USER_ID);
-		return this;
 	}
 }

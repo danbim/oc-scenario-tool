@@ -98,14 +98,14 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 
 	@Override
 	protected UsernamePasswordAuthProvider.LoginResult loginUser(MyLoginUsernamePasswordAuthUser authUser) {
-		final Optional<User> u = User.findByUsernamePasswordIdentity(authUser);
-		if (!u.isPresent()) {
+		final User u = User.find.byId(authUser.getEmail());
+		if (u == null) {
 			return LoginResult.NOT_FOUND;
 		} else {
-			if (!u.get().emailValidated) {
+			if (!u.emailValidated) {
 				return LoginResult.USER_UNVERIFIED;
 			} else {
-				for (final UserLinkedAccount acc : u.get().linkedAccounts) {
+				for (final UserLinkedAccount acc : u.linkedAccounts) {
 					if (getKey().equals(acc.providerKey)) {
 						if (authUser.checkPassword(acc.providerUserId, authUser.getPassword())) {
 							// Password was correct
@@ -179,8 +179,8 @@ public class MyUsernamePasswordAuthProvider extends UsernamePasswordAuthProvider
 	}
 
 	@Override
-	protected String generateVerificationRecord(final MyUsernamePasswordAuthUser user) {
-		return generateVerificationRecord(User.findByAuthUserIdentity(user).get());
+	protected String generateVerificationRecord(final MyUsernamePasswordAuthUser authUser) {
+		return generateVerificationRecord(User.find.byId(authUser.getEmail()));
 	}
 
 	protected String generateVerificationRecord(final User user) {

@@ -9,17 +9,17 @@ GET           /                                      @controllers.Application.in
 GET           /assets/*file                          controllers.Assets.at(path="/public", file)
 
 # Scenario CRUD functionality
-GET           /scenarios                             @controllers.ScenarioController.list
-POST          /scenarios                             @controllers.ScenarioController.create
-GET           /scenarios/:id                         @controllers.ScenarioController.get(id: String)
-DELETE        /scenarios/:id                         @controllers.ScenarioController.delete(id: String)
+GET           /scenarios                             @controllers.Scenarios.list
+POST          /scenarios                             @controllers.Scenarios.create
+GET           /scenarios/:id                         @controllers.Scenarios.get(id: Long)
+DELETE        /scenarios/:id                         @controllers.Scenarios.delete(id: Long)
 
 # User CRUD functionality
-POST          /users/:id/roles                       @controllers.UserController.setRoles(id: String)
-GET           /users                                 @controllers.UserController.list
-POST          /users                                 @controllers.UserController.create
-GET           /users/:id                             @controllers.UserController.get(id: String)
-DELETE        /users/:id                             @controllers.UserController.delete(id: String)
+POST          /users/:email/roles                    @controllers.Users.setRoles(email: String)
+GET           /users                                 @controllers.Users.list
+POST          /users                                 @controllers.Users.create
+GET           /users/:email                          @controllers.Users.get(email: String)
+DELETE        /users/:email                          @controllers.Users.delete(email: String)
 
 # Authentication and Account Management
 GET           /profile                               @controllers.Application.profile

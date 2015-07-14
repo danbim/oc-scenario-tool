@@ -1,6 +1,6 @@
-@(scenario: Option[models.Scenario], users: List[User])
+@(scenario: Option[models.Scenario])
 
-<form class="form-horizontal" action="@controllers.routes.ScenarioController.create" method="post">
+<form class="form-horizontal" action="@controllers.routes.Scenarios.create" method="post">
     <div class="form-group">
         <label for="title" class="col-md-2">Title</label>
         <div class="col-md-10">
@@ -17,16 +17,6 @@
         <label for="title" class="col-md-2">Narrative</label>
         <div class="col-md-10">
             <textarea id="narrative" name="narrative">@scenario.map(s => s.narrative)</textarea>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="title" class="col-md-2">Creator</label>
-        <div class="col-md-10">
-            <select id="creator" name="creator">
-                @users.map { user =>
-                    <option value="@user.id">@user.name</option>
-                }
-            </select>
         </div>
     </div>
     <div class="form-group">
